@@ -97,8 +97,8 @@ def test_get_chrom_mapping():
 
 def test_get_type():
     bed_type = get_type(HUB_CONFIG)
-    assert bed_type == "9+2"
+    assert bed_type == "9 + 2"
     hub_cfg = HUB_CONFIG.model_copy()
     hub_cfg.score_policy = "zero"
     bed_type = get_type(hub_cfg)
-    assert bed_type == "9+3"
+    assert bed_type == "9 + 3"

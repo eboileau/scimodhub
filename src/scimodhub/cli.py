@@ -1,4 +1,5 @@
 import argparse
+import sys
 import yaml
 import shutil
 from pathlib import Path
@@ -19,16 +20,23 @@ def main() -> None:
     parser.add_argument(
         "--config", required=True, help="Required YAML configuration file."
     )
-    subparsers = parser.add_subparsers(dest="cmd", required=True)
 
+    subparsers = parser.add_subparsers(dest="cmd", required=True)
     fetch_parser = subparsers.add_parser("fetch", help="Fetch data from Sci-ModoM.")
+    fetch_parser.add_argument(
+        "--api-version", type=str, default="v0", help="Sci-ModoM API version"
+    )
+    fetch_parser.add_argument(
+        "--metadata-only",
+        action="store_true",
+        help="Download metadata only; otherwise also download bedRMod files.",
+    )
     # get for organisms in config
     # get chrom size if not specified, write to work dir same as for build (utils) CONVERT !!!:
     # api version, use dict to map end points with version, now only v0 (module) - option
     # write browse to work dir, and final manifest from config (dont overwrite)
     # get each bedrmod file from manifest, log any missing, update manifest - option (only metadata and/or data)
     build_parser = subparsers.add_parser("build", help="Build a track hub")
-    # keep working directory or delete
     build_parser.add_argument(
         "--skip-call",
         action="store_true",
@@ -42,6 +50,8 @@ def main() -> None:
     )
     args = parser.parse_args()
 
+    logger.info("[scimodhub]: {}".format(" ".join(sys.argv)))
+
     config = yaml.safe_load(Path(args.config).read_text(encoding="utf-8"))
 
     if args.cmd == "fetch":
@@ -49,7 +59,7 @@ def main() -> None:
     else:
         if not args.skip_call:
             if shutil.which("bedToBigBed") is None:
-                # logging
+                logger.error("FileNotFoundError: No such file: 'bedToBigBed'")
                 return
         build_tracks(config, args.skip_call, args.max_workers)
 

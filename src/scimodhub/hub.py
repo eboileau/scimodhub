@@ -65,7 +65,7 @@ def track_db_config_from_dict(config: dict, label: str) -> TrackHubConfig:
     )
 
 
-def write_metadata(subtracks: list[Subtrack], handle: TextIO) -> None:
+def write_metadata(handle: TextIO, subtracks: list[Subtrack]) -> None:
     """Write metadata.tsv."""
     rows = [
         {
@@ -115,6 +115,7 @@ def write_trackdb(
         name=hub_cfg.track_db.name,
         short_label=hub_cfg.track_db.short_label,
         long_label=hub_cfg.track_db.long_label,
+        track_type=f"bigBed {get_type(hub_cfg)}",
         meta_data_url="metadata.tsv",
         primary_key="track",
         max_check_boxes=hub_cfg.max_check_boxes,

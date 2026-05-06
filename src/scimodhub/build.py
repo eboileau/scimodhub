@@ -170,7 +170,7 @@ def build_organism_tracks(
         rows, hub_cfg, assembly, euf_versions, hub_root, hub_dir, tmp_dir
     )
     with open(Path(hub_dir, "metadata.tsv"), "w") as fh:
-        write_metadata(subtracks, fh)
+        write_metadata(fh, subtracks)
 
     def _task(subtrack: Subtrack):
         return build_subtrack(
@@ -211,6 +211,7 @@ def build_tracks(
         )
         genomes.append((assembly, rel_path))
 
+    Path(hub_root, "genomes.txt").unlink(missing_ok=True)
     with ExitStack() as stack:
         files = {
             f: stack.enter_context(open(Path(hub_root, f), m, encoding="utf-8"))

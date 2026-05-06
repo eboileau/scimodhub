@@ -97,8 +97,8 @@ def get_type(hub_cfg: TrackHubConfig) -> str:
     """
     policy = hub_cfg.score_policy.lower()
     if policy == "zero":
-        return "9+3"
-    return "9+2"
+        return "9 + 3"
+    return "9 + 2"
 
 
 # def get_seqids(path: str, assembly: str) -> list[str]:

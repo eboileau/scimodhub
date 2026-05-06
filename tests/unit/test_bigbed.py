@@ -77,7 +77,7 @@ uint\tscore;\t"bedRMod score or 0; off"
 char[1]\tstrand;\t"Strand"
 uint\tthickStart;\t"Thick start"
 uint\tthickEnd;\t"Thick end"
-string\titemRgb;\t"Blue (0) to red (100) percent modified"
+uint\titemRgb;\t"Blue (0) to red (100) percent modified"
 uint\tcoverage;\t"Coverage"
 float\tfrequency;\t"Percent modified"
 )
@@ -94,7 +94,7 @@ uint\tscore;\t"bedRMod score or 0; off"
 char[1]\tstrand;\t"Strand"
 uint\tthickStart;\t"Thick start"
 uint\tthickEnd;\t"Thick end"
-string\titemRgb;\t"Blue (0) to red (100) percent modified"
+uint\titemRgb;\t"Blue (0) to red (100) percent modified"
 uint\tcoverage;\t"Coverage"
 float\tfrequency;\t"Percent modified"
 uint\trawScore;\t"bedRmod score"
@@ -109,8 +109,13 @@ def _generate_records():
         yield record
 
 
-def _mock_run(cmd, caller):
-    print(cmd)
+def _mock_run(
+    cmd, caller, capture_output: bool = False, stdout: MockStringIO | None = None
+):
+    if stdout is None:
+        print(cmd)
+    else:
+        stdout.write(cmd)
 
 
 def test_write_bed():
@@ -135,13 +140,12 @@ def test_write_autosql():
     assert fh.final_content == ZERO_SCHEMA
 
 
-def test_sort_bed(mocker, capsys):
+def test_sort_bed(mocker):
     mock_run = mocker.patch("scimodhub.bigbed._run")
     mock_run.side_effect = _mock_run
-    _sort_bed("bed", "sorted")
-    captured = capsys.readouterr()
-    assert captured.out == "sort -k1,1 -k2,2n bed > sorted\n"
-    mock_run.assert_called_once()
+    with MockStringIO() as fh:
+        _sort_bed(fh, "bed")
+    assert fh.final_content == "sort -k1,1 -k2,2n bed"
 
 
 def test_convert_to_bigbed(mocker, capsys):

@@ -56,3 +56,10 @@ env/
 venv/
 env.bak/
 venv.bak/
+
+# see scripts/copy_ucsc_exe
+scripts/fetchChromSizes 
+scripts/bedToBigBed 
+scripts/hubCheck 
+scripts/bigBedInfo 
+scripts/bigBedSummary 

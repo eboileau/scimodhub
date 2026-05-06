@@ -24,7 +24,7 @@ genomes:
       GRCh38: "hg38"
     chroms:
       mapping: data/GRCh38_ensembl2UCSC.tsv
-      sizes: null
+      sizes: local/hg38.chrom.sizes # null
     label: "human"
   m_musculus:
     taxa_id: 10090
@@ -32,7 +32,7 @@ genomes:
       GRCm39: "mm39"
     chroms:
       mapping: data/GRCm39_ensembl2UCSC.tsv
-      sizes: null
+      sizes: local/mm39.chrom.sizes #null
     label: "mouse"
   include:
     - h_sapiens

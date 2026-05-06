@@ -106,7 +106,7 @@ EXPECTED_TRACK_HUB = {
     "description.html": "<html>\n<head><title>short</title></head>\n<body>\n<h1>longer label</h1>\n<p>This hub uses a faceted composite with one subtrack per dataset x modification.</p>\n<p>Facets are driven by metadata.tsv and can include modification, tissue, technology, and cell type.</p>\n<p>The mouseover text displays coverage, frequency, and score for each item.</p>\n</body>\n</html>\n",
 }
 
-EXPECTED_TRACK_DB = "track trackDbName\nshortLabel trackDb (label)\nlongLabel trackDb long label (label)\nmetaDataUrl metadata.tsv\nprimaryKey track\ncompositeTrack faceted\nmaxCheckBoxes 20\nallButtonPair on\ncenterLabelsDense on\ndragAndDrop subTracks\nhideEmptySubtracks on\n\ntrack trackDbName_a7o5Kmjr4TdpY\ntype bigBed 9+2\nparent trackDbName off\nbigDataUrl a7o5Kmjr4TdpY.bb\nshortLabel Y\nlongLabel EUFID:a7o5Kmjr4Tdp | Y HEK293T psi-co-mAFiA\nmouseOver $name | score: $score | coverage: $coverage | percent modified: $frequency\nitemRgb on\nuseScore 0\nnoScoreFilter on\nspectrum off\n"
+EXPECTED_TRACK_DB = "track trackDbName\nshortLabel trackDb (label)\nlongLabel trackDb long label (label)\ntype bigBed 9 + 2\nmetaDataUrl metadata.tsv\nprimaryKey track\ncompositeTrack faceted\nmaxCheckBoxes 20\nallButtonPair on\ncenterLabelsDense on\ndragAndDrop subTracks\nhideEmptySubtracks on\n\ntrack trackDbName_a7o5Kmjr4TdpY\ntype bigBed 9 + 2\nparent trackDbName off\nbigDataUrl a7o5Kmjr4TdpY.bb\nshortLabel Y\nlongLabel EUFID:a7o5Kmjr4Tdp | Y HEK293T psi-co-mAFiA\nmouseOver $name | score: $score | coverage: $coverage | percent modified: $frequency\nitemRgb on\nuseScore 0\nnoScoreFilter on\nspectrum off\n"
 
 
 def test_track_db_config_from_dict():
@@ -121,7 +121,7 @@ def test_hub_config_from_dict():
 
 def test_write_metadata():
     with MockStringIO() as fh:
-        write_metadata(SUBTRACKS, fh)
+        write_metadata(fh, SUBTRACKS)
     assert fh.final_content == EXPECTED_METADATA
 
 

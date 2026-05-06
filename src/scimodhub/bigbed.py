@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 from typing import Generator, TextIO
 import shlex
@@ -11,6 +12,9 @@ from scimodhub.models import (
     AutoSqlField,
     AutoSqlSchema,
 )
+
+
+logger = logging.getLogger(__name__)
 
 
 def _get_as_schema(hub_cfg: TrackHubConfig) -> AutoSqlSchema:
@@ -36,7 +40,7 @@ def _get_as_schema(hub_cfg: TrackHubConfig) -> AutoSqlSchema:
         AutoSqlField(astype="uint", name="thickStart", description="Thick start"),
         AutoSqlField(astype="uint", name="thickEnd", description="Thick end"),
         AutoSqlField(
-            astype="string",
+            astype="uint",
             name="itemRgb",
             description="Blue (0) to red (100) percent modified",
         ),
@@ -112,18 +116,25 @@ def _run(
     check: bool = True,
     capture_output: bool = True,
     text: bool = True,
-):
+    stdout: TextIO | None = None,
+) -> None:
     try:
-        run(shlex.split(cmd), check=check, capture_output=capture_output, text=text)
+        run(
+            shlex.split(cmd),
+            check=check,
+            capture_output=capture_output,
+            text=text,
+            stdout=stdout,
+        )
     except FileNotFoundError as exc:
         raise Exception(f"Process failed: {caller} could not be found!") from exc
     except CalledProcessError as exc:
         raise Exception(f"Process failed with {exc.stderr}")
 
 
-def _sort_bed(bed_path: str, sorted_bed_path: str) -> None:
-    cmd = f"sort -k1,1 -k2,2n {bed_path} > {sorted_bed_path}"
-    _run(cmd, "sort")
+def _sort_bed(handle: TextIO, bed_path: str) -> None:
+    cmd = f"sort -k1,1 -k2,2n {bed_path}"
+    _run(cmd, "sort", capture_output=False, stdout=handle)
 
 
 def _convert_to_bigbed(
@@ -159,11 +170,12 @@ def build_subtrack(
     with as_path.open("w", encoding="utf-8") as fh:
         _write_autosql(fh, hub_cfg)
     if skip_call:
-        pass
+        logger.warning("Skipping call to bedToBigBed!")
     else:
-        bed_type = get_type(hub_cfg)
-        _sort_bed(bed_path.as_posix(), sorted_bed_path.as_posix())
+        with sorted_bed_path.open("w", encoding="utf-8") as fh:
+            _sort_bed(fh, bed_path.as_posix())
         if chrom_sizes is not None:
+            bed_type = get_type(hub_cfg).replace(" ", "")
             _convert_to_bigbed(
                 sorted_bed_path.as_posix(),
                 chrom_sizes.as_posix(),
@@ -171,4 +183,4 @@ def build_subtrack(
                 bb_path.as_posix(),
                 bed_type,
             )
-    return 0
+    return 1

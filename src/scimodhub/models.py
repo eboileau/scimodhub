@@ -183,6 +183,7 @@ class FacetedComposite(BaseModel):
     long_label: Annotated[
         str, Field(min_length=1, max_length=76, pattern=r"[a-zA-Z0-9 ]")
     ]
+    track_type: str = "bigBed 9+2"
     meta_data_url: str  # The tsv file with facet information.
     primary_key: Annotated[
         str, Field(pattern=r"[a-zA-Z0-9_-]")
@@ -200,6 +201,7 @@ class FacetedComposite(BaseModel):
             f"track {self.name}",
             f"shortLabel {self.short_label}",
             f"longLabel {self.long_label}",
+            f"type {self.track_type}",
             f"metaDataUrl {self.meta_data_url}",
             f"primaryKey {self.primary_key}",
             # "compositeTrack on",

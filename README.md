@@ -76,6 +76,16 @@ The bedRmod header is validated for EUF version and assembly; the assembly is sp
 * `_add_subtrack_spec`: add option (config or args) to convert modification short names to MODOMICS code for track names.
 * customize *description.html*, add text to config and pass down.
 
+* hubCheck
+
+```
+warning: missing description page for track. Add 'html SciModoM.html' line to the 'SciModoM' track stanza.
+warning: missing description page for track. Add 'html SciModoM_dataset00001Y.html' line to the 'SciModoM_dataset00001Y' track stanza.
+warning: missing description page for track. Add 'html SciModoM_dataset00001m6A.html' line to the 'SciModoM_dataset00001m6A' track stanza.
+warning: missing description page for track. Add 'html SciModoM_dataset00002Y.html' line to the 'SciModoM_dataset00002Y' track stanza.
+warning: missing description page for track. Add 'html SciModoM_dataset00003m6A.html' line to the 'SciModoM_dataset00003m6A' track stanza.
+```
+
 ## Testing
 
 
