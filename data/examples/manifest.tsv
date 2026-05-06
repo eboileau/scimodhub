@@ -1,0 +1,4 @@
+dataset_id	project_id	taxa_id	rna	tech	modomics_sname	cto	bedrmod_path
+dataset00001	project1	9606	WTS	psi-co-mAFiA	m6A,Y	HEK293T	data/examples/file1.bedrmod
+dataset00002	project2	9606	WTS	xPore	Y	HeLa	data/examples/file2.bedrmod
+dataset00003	project3	10090	WTS	GLORI	m6A	mESC	data/examples/file3.bedrmod

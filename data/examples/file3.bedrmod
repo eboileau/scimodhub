@@ -1,0 +1,13 @@
+#fileformat=bedRModv1.8
+#organism=10090
+#modification_type=RNA
+#assembly=GRCm39
+#annotation_source=Ensembl
+#annotation_version=110
+#sequencing_platform=
+#basecalling=
+#bioinformatics_workflow=
+#experiment=
+#external_source=
+#chrom chromStart chromEnd name score strand thickStart thickEnd itemRgb coverage frequency
+1	3528090	3528091	m6A	30	+	3528090	3528091	255,0,0	35	72

@@ -1,0 +1,74 @@
+# Configuration file
+
+# List of datasets to include (tracks).
+# This file is created by "fetch", unless it already exists.
+metadata_table: data/examples/manifest.tsv
+# The hub directory. Created is does not exists.
+staging_dir: local/staging
+# Data wrangling directory. Created if does not exists.
+working_dir: local/working
+
+# EUF/bedRMod compatible versions.
+euf_compatible_versions:
+  - "1.8"
+
+# chroms.assembly: Sci-ModoM's nomenclature (Ensembl): UCSC's nomenclature
+# chroms.sizes: chrom sizes - leave empty if fetching data from Sci-ModoM
+# if given, must follow the UCSC specs
+# mapping: path to tsv with chrom mapping from Ensembl to UCSC
+# label: added to the track labels
+genomes:
+  h_sapiens:
+    taxa_id: 9606
+    assembly:
+      GRCh38: "hg38"
+    chroms:
+      mapping: data/GRCh38_ensembl2UCSC.tsv
+      sizes: null
+    label: "human"
+  m_musculus:
+    taxa_id: 10090
+    assembly:
+      GRCm39: "mm39"
+    chroms:
+      mapping: data/GRCm39_ensembl2UCSC.tsv
+      sizes: null
+    label: "mouse"
+  include:
+    - h_sapiens
+    - m_musculus
+
+hub:
+  hub:
+    # A single-word name of the directory containing the track hub files. Not displayed to hub users.
+    name: SciModHub
+    # Suggested maximum length is 17 characters. Displayed as the hub name.
+    short_label: "Sci-ModoM Hub"
+    # Suggested maximum length is 80 characters. Displayed in the description field.
+    long_label: "Sci-ModoM Genome Browser Tracks"
+    email: "boileau@uni-heidelberg.de"
+  track_db:
+    # The composite's track name (parent). Each subtrack name is <parentTrackName>_<primaryKeyValue>.
+    name: SciModoM
+    # Each track is automatically annotated with labels derived from metadata.
+    # These labels are for the "parent".
+    # Maximum length is 17 characters. Track's "short label" to identify the track.
+    # NOTE: the assembly label is added to the short_label.
+    short_label: "Sci-ModoM"
+    # Maximum length is 76 characters. Track's "long label" to identify the track.
+    # NOTE: the assembly label is added to the long_label.
+    long_label: "Sci-ModoM RNA modification sites"
+  # Score-based shading and filtering is disabled.
+  # The bedRMod score policy defines how to handle the 5th field:
+  # preserve (keep score), zero (set score to 0, add raw_score to 12th field)
+  score_policy: preserve
+  # defaults
+  max_check_boxes: 20
+  hide_empty_subtracks: true
+  center_labels_dense: true
+  all_button_pair: true
+  drag_and_drop_subtracks: true
+
+display:
+  frequency_color_min: "0,0,255"
+  frequency_color_max: "255,0,0"
