@@ -9,7 +9,8 @@ from scimodhub.utils import (
     get_chrom_mapping,
     get_type,
 )
-from scimodhub.models import MetadataRow, Hub, TrackDb, TrackHubConfig
+from scimodhub.models import MetadataRow, TrackDb, TrackHubConfig
+
 
 METADATA_TBL = """project_id\tdataset_id\ttaxa_id\trna\tmodomics_sname\ttech\tcto\tbedrmod_path
 WrBiNJCZ\ta7o5Kmjr4Tdp\t9606\tWTS\tm6A,Y\tpsi-co-mAFiA\tHEK293T\tpath"""
@@ -28,7 +29,6 @@ EXPECTED_TBL = [
     )
 ]
 
-
 CONFIG = {
     "working_dir": "working",
     "staging_dir": "staging",
@@ -43,19 +43,9 @@ CONFIG = {
     "hub": {"hub": {"name": "MyHub"}},
 }
 
-
 CHROM_TBL = """1\tchr1\n2\tchr2"""
 
-
 EXPECTED_DICT = {"1": "chr1", "2": "chr2"}
-
-
-HUB = Hub(
-    name="myhub",
-    short_label="short",
-    long_label="longer label",
-    email="email@uni-heidelberg.de",
-)
 
 TRACKDB = TrackDb(
     name="trackDbName",
@@ -64,7 +54,6 @@ TRACKDB = TrackDb(
 )
 
 HUB_CONFIG = TrackHubConfig(
-    hub=HUB,
     track_db=TRACKDB,
     score_policy="preserve",
     max_check_boxes=20,
@@ -97,7 +86,7 @@ def test_get_tmp_dir():
 def test_get_hub_dir():
     hub_dir = get_hub_dir(CONFIG, "h_sapiens")
     assert hub_dir == Path("staging", "MyHub", "hsapiens", "hg38")
-    hub_dir = get_hub_dir(CONFIG, "h_sapiens", root=True)
+    hub_dir = get_hub_dir(CONFIG)
     assert hub_dir == Path("staging", "MyHub")
 
 

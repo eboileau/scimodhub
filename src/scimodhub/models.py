@@ -93,7 +93,6 @@ class TrackDb(BaseModel):
 class TrackHubConfig(BaseModel):
     """Track Hub."""
 
-    hub: Hub
     track_db: TrackDb
     score_policy: str
     max_check_boxes: int

@@ -64,17 +64,17 @@ def get_tmp_dir(config: dict, organism: str) -> Path:
     return Path(config["working_dir"], parent, org_cfg["assembly"][assembly])
 
 
-def get_hub_dir(config: dict, organism: str, root: bool = False) -> Path:
+def get_hub_dir(config: dict, organism: str | None = None) -> Path:
     """Create path to hub directory."""
-    org_cfg, assembly = get_org_cfg_and_assembly(config, organism)
     hub_name = re.sub(r"[^a-zA-Z0-9]", "", config["hub"]["hub"]["name"])
+    hub_root = Path(config["staging_dir"], hub_name)
+    if organism is None:
+        return hub_root
+    org_cfg, assembly = get_org_cfg_and_assembly(config, organism)
     hub_parent = re.sub(r"[^a-zA-Z0-9]", "", organism)
     hub_child = re.sub(r"[^a-zA-Z0-9]", "", org_cfg["assembly"][assembly])
-    hub_dir = Path(config["staging_dir"], hub_name, hub_parent, hub_child)
-    if root:
-        return hub_dir.parents[1]
-    else:
-        return hub_dir
+    hub_dir = Path(hub_root, hub_parent, hub_child)
+    return hub_dir
 
 
 def get_chrom_mapping(handle: TextIO) -> dict[str, str]:

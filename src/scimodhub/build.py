@@ -20,7 +20,13 @@ from scimodhub.utils import (
     get_org_cfg_and_assembly,
     get_chrom_mapping,
 )
-from scimodhub.hub import hub_config_from_dict, write_metadata, write_trackdb
+from scimodhub.hub import (
+    hub_config_from_dict,
+    track_db_config_from_dict,
+    write_metadata,
+    write_trackdb,
+    write_hub_files,
+)
 from scimodhub.bedrmod import EufImporter
 from scimodhub.bigbed import build_subtrack
 
@@ -121,7 +127,7 @@ def build_organism_tracks(
     organism: str,
     skip_call: bool = False,
     max_workers: int | None = None,
-) -> None:
+) -> tuple[str, str]:
     """Build tracks for a given organism."""
     org_cfg, assembly = get_org_cfg_and_assembly(config, organism)
     euf_versions = config["euf_compatible_versions"]
@@ -131,7 +137,7 @@ def build_organism_tracks(
     tmp_dir.mkdir(parents=True, exist_ok=True)
     hub_dir = get_hub_dir(config, organism)
     hub_dir.mkdir(parents=True, exist_ok=True)
-    hub_root = get_hub_dir(config, organism, root=True)
+    hub_root = get_hub_dir(config)
 
     # I/O
     chrom_file = Path(org_cfg["chroms"]["mapping"])
@@ -159,7 +165,7 @@ def build_organism_tracks(
         logger.warning(f"No metadata found for organism: {organism}")
         return
 
-    hub_cfg = hub_config_from_dict(config, org_cfg["label"])
+    hub_cfg = track_db_config_from_dict(config, org_cfg["label"])
     subtracks = _prepare_subtracks(
         rows, hub_cfg, assembly, euf_versions, hub_root, hub_dir, tmp_dir
     )
@@ -181,15 +187,10 @@ def build_organism_tracks(
         for future in as_completed(futures):
             future.result()
 
-    with ExitStack() as stack:
-        files = {
-            f: stack.enter_context(open(Path(d, f), "w", encoding="utf-8"))
-            for d, f in zip(
-                [hub_root, hub_root, hub_root, hub_dir],
-                ["hub.txt", "genomes.txt", "description.html", "trackDb.txt"],
-            )
-        }
-        write_trackdb(subtracks, hub_cfg, files, org_cfg["assembly"][assembly])
+    with open(Path(hub_dir, "trackDb.txt"), "w") as fh:
+        write_trackdb(fh, subtracks, hub_cfg)
+
+    return org_cfg["assembly"][assembly], hub_dir.relative_to(hub_root).as_posix()
 
 
 def build_tracks(
@@ -198,10 +199,24 @@ def build_tracks(
     max_workers: int | None = None,
 ) -> None:
     """Build tracks."""
+    hub_root = get_hub_dir(config)
+    hub_cfg = hub_config_from_dict(config)
+    genomes = []
     for organism in config["genomes"]["include"]:
-        build_organism_tracks(
+        assembly, rel_path = build_organism_tracks(
             config,
             organism,
             skip_call=skip_call,
             max_workers=max_workers,
         )
+        genomes.append((assembly, rel_path))
+
+    with ExitStack() as stack:
+        files = {
+            f: stack.enter_context(open(Path(hub_root, f), m, encoding="utf-8"))
+            for f, m in zip(
+                ["hub.txt", "description.html", "genomes.txt"],
+                ["w", "w", "a"],
+            )
+        }
+        write_hub_files(files, hub_cfg, genomes)

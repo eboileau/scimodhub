@@ -26,64 +26,21 @@ def _get_mouse_over(hub_cfg: TrackHubConfig) -> str:
     )
 
 
-def _write_hub_files(
-    hub_files: dict[str, TextIO],
-    assembly: str,
-    hub_name: str,
-    short_label: str,
-    long_label: str,
-    email: str,
-    rel_path: str,
-    composite: FacetedComposite,
-) -> None:
-    hub_files["hub.txt"].write(
-        dedent(
-            f"""\
-    hub {hub_name}
-    shortLabel {short_label}
-    longLabel {long_label}
-    genomesFile genomes.txt
-    email {email}
-    descriptionUrl description.html
-    """
-        )
-    )
-    hub_files["genomes.txt"].write(
-        dedent(
-            f"""\
-    genome {assembly}
-    trackDb {rel_path}/trackDb.txt
-    """
-        )
-    )
-    hub_files["trackDb.txt"].write(composite.render())
-    hub_files["description.html"].write(
-        dedent(
-            f"""\
-    <html>
-    <head><title>{short_label}</title></head>
-    <body>
-    <h1>{long_label}</h1>
-    <p>This hub uses a faceted composite with one subtrack per dataset x modification.</p>
-    <p>Facets are driven by metadata.tsv and can include modification, tissue, technology, and cell type.</p>
-    <p>The mouseover text displays coverage, frequency, and score for each item.</p>
-    </body>
-    </html>
-    """
-        )
-    )
-
-
-def hub_config_from_dict(config: dict, label: str) -> TrackHubConfig:
+def hub_config_from_dict(config: dict) -> TrackHubConfig:
     """Define hub configuration with defaults."""
     hub_cfg = config["hub"]
-    display_cfg = config.get("display", {})
-    hub = Hub(
+    return Hub(
         name=hub_cfg["hub"]["name"],
         short_label=hub_cfg["hub"]["short_label"],
         long_label=hub_cfg["hub"]["long_label"],
         email=hub_cfg["hub"]["email"],
     )
+
+
+def track_db_config_from_dict(config: dict, label: str) -> TrackHubConfig:
+    """Define hub configuration (trackDb) with defaults."""
+    hub_cfg = config["hub"]
+    display_cfg = config.get("display", {})
     short_label = hub_cfg["track_db"]["short_label"]
     long_label = hub_cfg["track_db"]["long_label"]
     track_db = TrackDb(
@@ -92,7 +49,6 @@ def hub_config_from_dict(config: dict, label: str) -> TrackHubConfig:
         long_label=f"{long_label} ({label})",
     )
     return TrackHubConfig(
-        hub=hub,
         track_db=track_db,
         score_policy=str(hub_cfg.get("score_policy", "preserve")),
         max_check_boxes=int(hub_cfg.get("max_check_boxes", 20)),
@@ -125,12 +81,11 @@ def write_metadata(subtracks: list[Subtrack], handle: TextIO) -> None:
 
 
 def write_trackdb(
+    handle: TextIO,
     subtracks: list[Subtrack],
     hub_cfg: TrackHubConfig,
-    hub_files: dict[str, TextIO],
-    assembly: str,
-) -> FacetedComposite:
-    """Write track hub."""
+) -> None:
+    """Write track hub (trackDb)."""
     tracks = []
     for track in sorted(
         subtracks,
@@ -169,15 +124,47 @@ def write_trackdb(
         drag_and_drop=hub_cfg.drag_and_drop,
         hide_empty=hub_cfg.hide_empty,
     )
+    handle.write(composite.render())
 
-    _write_hub_files(
-        hub_files=hub_files,
-        assembly=assembly,
-        hub_name=hub_cfg.hub.name,
-        short_label=hub_cfg.hub.short_label,
-        long_label=hub_cfg.hub.long_label,
-        email=hub_cfg.hub.email,
-        rel_path=spec.hub_dir.relative_to(spec.hub_root).as_posix(),
-        composite=composite,
+
+def write_hub_files(
+    hub_files: dict[str, TextIO], hub_cfg: Hub, genomes: tuple[str, str]
+) -> None:
+    """Write hub files."""
+    hub_files["hub.txt"].write(
+        dedent(
+            f"""\
+    hub {hub_cfg.name}
+    shortLabel {hub_cfg.short_label}
+    longLabel {hub_cfg.long_label}
+    genomesFile genomes.txt
+    email {hub_cfg.email}
+    descriptionUrl description.html
+    """
+        )
     )
-    return composite
+    hub_files["description.html"].write(
+        dedent(
+            f"""\
+    <html>
+    <head><title>{hub_cfg.short_label}</title></head>
+    <body>
+    <h1>{hub_cfg.long_label}</h1>
+    <p>This hub uses a faceted composite with one subtrack per dataset x modification.</p>
+    <p>Facets are driven by metadata.tsv and can include modification, tissue, technology, and cell type.</p>
+    <p>The mouseover text displays coverage, frequency, and score for each item.</p>
+    </body>
+    </html>
+    """
+        )
+    )
+    for assembly, rel_path in genomes:
+        hub_files["genomes.txt"].write(
+            dedent(
+                f"""\
+                genome {assembly}
+                trackDb {rel_path}/trackDb.txt
+
+                """
+            )
+        )

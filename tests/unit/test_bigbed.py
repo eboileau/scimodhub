@@ -6,17 +6,10 @@ from scimodhub.bigbed import (
     _sort_bed,
     _convert_to_bigbed,
 )
-from scimodhub.models import Hub, TrackDb, TrackHubConfig, EufRecord
+from scimodhub.models import TrackDb, TrackHubConfig, EufRecord
 
 from tests.mocks.io import MockStringIO
 
-
-HUB = Hub(
-    name="myhub",
-    short_label="short",
-    long_label="longer label",
-    email="email@uni-heidelberg.de",
-)
 
 TRACKDB = TrackDb(
     name="trackDbName",
@@ -25,7 +18,6 @@ TRACKDB = TrackDb(
 )
 
 HUB_CONFIG = TrackHubConfig(
-    hub=HUB,
     track_db=TRACKDB,
     score_policy="preserve",
     max_check_boxes=20,
@@ -36,7 +28,6 @@ HUB_CONFIG = TrackHubConfig(
     rgb_min=(0, 0, 255),
     rgb_max=(255, 0, 0),
 )
-
 
 RECORDS = [
     EufRecord(
@@ -67,16 +58,13 @@ RECORDS = [
     ),
 ]
 
-
 EXPECTED_BED = """chr1\t102\t103\tm6A\t10\t+\t102\t103\t204,0,51\t50\t80
 chr1\t105\t106\tY\t20\t+\t105\t106\t128,0,128\t20\t50
 """
 
-
 EXPECTED_BED_ZERO = """chr1\t102\t103\tm6A\t0\t+\t102\t103\t204,0,51\t50\t80\t10
 chr1\t105\t106\tY\t0\t+\t105\t106\t128,0,128\t20\t50\t20
 """
-
 
 DEFAULT_SCHEMA = """table bedRMod
 "bigRMod bedRMod"
@@ -95,7 +83,6 @@ float\tfrequency;\t"Percent modified"
 )
 """
 
-
 ZERO_SCHEMA = """table bedRMod
 "bigRMod bedRMod"
 (
@@ -113,7 +100,6 @@ float\tfrequency;\t"Percent modified"
 uint\trawScore;\t"bedRmod score"
 )
 """
-
 
 DICT = {"1": "chr1", "2": "chr2"}
 
