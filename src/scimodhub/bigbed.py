@@ -66,11 +66,14 @@ def _write_autosql(
     handle.write(schema.render())
 
 
-def _get_score(score: int, policy: str) -> tuple[int, int | None]:
+def _get_score(record: EufRecord, policy: str) -> tuple[int, int | None]:
     policy = policy.lower()
     if policy == "zero":
-        return 0, score
-    return score, None
+        return 0, record.score
+    elif policy == "coverage":
+        return record.coverage, None
+    else:
+        return record.score, None
 
 
 def _generate_records(
@@ -79,7 +82,7 @@ def _generate_records(
     records: Generator[EufRecord, None, None],
 ) -> Generator[str, None, None]:
     for record in records:
-        score, raw_score = _get_score(record.score, hub_cfg.score_policy)
+        score, raw_score = _get_score(record, hub_cfg.score_policy)
         parts = [
             chrom_mapping[record.chrom],
             str(record.start),
