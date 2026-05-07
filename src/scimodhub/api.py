@@ -3,12 +3,12 @@ from urllib.parse import urlparse, urlunparse, urlencode, urljoin
 
 GITHUB_REST = "https://api.github.com/repos/"
 MODOMICS_REST = "https://www.genesilico.pl/modomics/api/"
-SCIMODOM_REST = "https://scimodom.dieterichlab.org/api/{version}/".format
+SCIMODOM_REST = "https://scimodom.dieterichlab.org/"
 SCIMODOM_ENDPOINTS = {
     "v0": {
-        "chroms": "chroms/",
-        "dataset": "dataset/list_all/",
-        "download": "transfer/dataset/",
+        "chroms": "api/v0/chroms/",
+        "dataset": "api/v0/dataset/list_all",
+        "download": "api/v0/transfer/dataset/",
     },
 }
 
@@ -27,6 +27,5 @@ def get_request(
     query: dict[str, str | int] = dict(),
 ) -> str:
     """Get API URL for a given endpoint."""
-    base_url = SCIMODOM_REST(version=version)
     path = urljoin(SCIMODOM_ENDPOINTS[version][endpoint], parts)
-    return _get_url(base_url, path, query)
+    return _get_url(SCIMODOM_REST, path, query)

@@ -55,7 +55,6 @@ def _write_metadata(
 def _write_chroms(
     handle: TextIO, version: str, taxa_id: int, mapping: dict[str, str]
 ) -> None:
-    print(get_request(version, "chroms", parts=str(taxa_id)))
     response = requests.get(get_request(version, "chroms", parts=str(taxa_id)))
     response.raise_for_status()
     df = pd.DataFrame(response.json()).astype({"chrom": str, "size": int})
