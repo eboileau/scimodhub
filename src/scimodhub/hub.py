@@ -77,7 +77,7 @@ def write_metadata(handle: TextIO, subtracks: list[Subtrack]) -> None:
         }
         for p in subtracks
     ]
-    pd.DataFrame(rows).to_csv(handle, sep="\t", index=False)
+    pd.DataFrame(rows).to_csv(handle, sep="\t", index=False, header=True)
 
 
 def write_trackdb(

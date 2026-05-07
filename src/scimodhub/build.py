@@ -14,6 +14,7 @@ from scimodhub.models import (
     EufRecord,
 )
 from scimodhub.utils import (
+    EmptyDataError,
     load_metadata,
     get_tmp_dir,
     get_hub_dir,
@@ -96,7 +97,6 @@ def _add_subtrack_spec(
 def _prepare_subtracks(
     rows: list[MetadataRow],
     hub_cfg: TrackHubConfig,
-    assembly: str,
     versions: list[str],
     hub_root: Path,
     hub_dir: Path,
@@ -107,7 +107,7 @@ def _prepare_subtracks(
         try:
             with open(row.bedrmod_path) as fp:
                 importer = EufImporter(stream=fp, source=row.bedrmod_path)
-                _validate_header(importer, row.dataset_id, assembly, versions)
+                _validate_header(importer, row.dataset_id, row.assembly, versions)
                 records = [record for record in importer.parse()]
                 # parse records - "split" by modification for faceting
                 for modification in row.modomics_sname.split(","):
@@ -118,7 +118,7 @@ def _prepare_subtracks(
                         Subtrack(spec=spec, records=_get_records(records, modification))
                     )
         except SpecsError as err:
-            logger.warning(f"Skipping {row.dataset_id}: {err}.")
+            logger.warning(f"Skipping {row.dataset_id}: {err}")
     return subtracks
 
 
@@ -142,8 +142,9 @@ def build_organism_tracks(
     # I/O
     chrom_file = Path(org_cfg["chroms"]["mapping"])
     if not chrom_file.exists():
-        logger.error(f"FileNotFoundError: No such file: '{chrom_file.as_posix()}'")
-        return
+        raise FileNotFoundError(
+            f"FileNotFoundError: No such file: '{chrom_file.as_posix()}'."
+        )
     with chrom_file.open("r") as fh:
         chrom_mapping = get_chrom_mapping(fh)
 
@@ -154,20 +155,27 @@ def build_organism_tracks(
         else:
             chrom_sizes = Path(org_cfg["chroms"]["sizes"])
         if not chrom_sizes.exists():
-            logger.error(f"FileNotFoundError: No such file: '{chrom_sizes.as_posix()}'")
-            return
+            raise FileNotFoundError(
+                f"FileNotFoundError: No such file: '{chrom_sizes.as_posix()}'."
+            )
 
-    # NOTE: "assembly" from config added to metadata
-    with open(Path(config["metadata_table"]), "r") as fh:
+    if config["metadata_table"] is None:
+        manifest = Path(tmp_dir, "manifest.tsv")
+    else:
+        manifest = Path(config["metadata_table"])
+    if not manifest.exists():
+        raise FileNotFoundError(
+            f"FileNotFoundError: No such file: '{manifest.as_posix()}'."
+        )
+    with manifest.open("r") as fh:
         rows = load_metadata(fh, assembly)
     rows = [r for r in rows if r.taxa_id == org_cfg["taxa_id"]]
     if not rows:
-        logger.warning(f"No metadata found for organism: {organism}")
-        return
+        raise EmptyDataError(f"No metadata found for {org_cfg['taxa_id']}.")
 
     hub_cfg = track_db_config_from_dict(config, org_cfg["label"])
     subtracks = _prepare_subtracks(
-        rows, hub_cfg, assembly, euf_versions, hub_root, hub_dir, tmp_dir
+        rows, hub_cfg, euf_versions, hub_root, hub_dir, tmp_dir
     )
     with open(Path(hub_dir, "metadata.tsv"), "w") as fh:
         write_metadata(fh, subtracks)
@@ -203,21 +211,25 @@ def build_tracks(
     hub_cfg = hub_config_from_dict(config)
     genomes = []
     for organism in config["genomes"]["include"]:
-        assembly, rel_path = build_organism_tracks(
-            config,
-            organism,
-            skip_call=skip_call,
-            max_workers=max_workers,
-        )
-        genomes.append((assembly, rel_path))
-
-    Path(hub_root, "genomes.txt").unlink(missing_ok=True)
-    with ExitStack() as stack:
-        files = {
-            f: stack.enter_context(open(Path(hub_root, f), m, encoding="utf-8"))
-            for f, m in zip(
-                ["hub.txt", "description.html", "genomes.txt"],
-                ["w", "w", "a"],
+        try:
+            assembly, rel_path = build_organism_tracks(
+                config,
+                organism,
+                skip_call=skip_call,
+                max_workers=max_workers,
             )
-        }
-        write_hub_files(files, hub_cfg, genomes)
+            genomes.append((assembly, rel_path))
+        except (FileNotFoundError, EmptyDataError) as err:
+            logger.warning(f"Skipping {organism}: {err}")
+
+    if genomes:
+        Path(hub_root, "genomes.txt").unlink(missing_ok=True)
+        with ExitStack() as stack:
+            files = {
+                f: stack.enter_context(open(Path(hub_root, f), m, encoding="utf-8"))
+                for f, m in zip(
+                    ["hub.txt", "description.html", "genomes.txt"],
+                    ["w", "w", "a"],
+                )
+            }
+            write_hub_files(files, hub_cfg, genomes)

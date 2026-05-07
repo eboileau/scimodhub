@@ -1,8 +1,7 @@
 # Configuration file
 
-# List of datasets to include (tracks).
-# This file is created by "fetch", unless it already exists.
-metadata_table: data/examples/manifest.tsv
+# List of datasets to include (tracks) - null if fetching data from Sci-ModoM
+metadata_table: data/examples/manifest.tsv # null
 # The hub directory. Created is does not exists.
 staging_dir: local/staging
 # Data wrangling directory. Created if does not exists.
@@ -13,7 +12,7 @@ euf_compatible_versions:
   - "1.8"
 
 # chroms.assembly: Sci-ModoM's nomenclature (Ensembl): UCSC's nomenclature
-# chroms.sizes: chrom sizes - leave empty if fetching data from Sci-ModoM
+# chroms.sizes: chrom sizes - null if fetching data from Sci-ModoM
 # if given, must follow the UCSC specs
 # mapping: path to tsv with chrom mapping from Ensembl to UCSC
 # label: added to the track labels

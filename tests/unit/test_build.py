@@ -2,7 +2,12 @@ from pathlib import Path
 
 import pytest
 
-from scimodhub.build import _get_records, _validate_header, _add_subtrack_spec
+from scimodhub.build import (
+    SpecsError,
+    _get_records,
+    _validate_header,
+    _add_subtrack_spec,
+)
 from scimodhub.models import (
     Hub,
     TrackDb,
@@ -128,9 +133,12 @@ def test_get_records():
 
 def test_validate_header():
     importer = MockEufImporter()
-    assembly = "GRCh38"
     euf_versions = ["1.8"]
-    assert _validate_header(importer, "dataset_id", assembly, euf_versions) is None
+    assert _validate_header(importer, "dataset_id", "GRCh38", euf_versions) is None
+
+    with pytest.raises(SpecsError) as exc:
+        _validate_header(importer, "dataset_id", "GRCm39", euf_versions) is None
+    assert (str(exc.value)) == "Assembly: GRCh38 (dataset_id) != GRCm39."
 
 
 def test_add_subtrack_spec():

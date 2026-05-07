@@ -55,7 +55,9 @@ cto
 bedrmod_path
 ```
 
-The bedRmod header is validated for EUF version and assembly; the assembly is specified in the configuration file. There is currently no API endpoint to query the Sci-ModoM assembly version.
+The bedRmod header is validated for EUF version and assembly; the assembly is specified in the metadata table or via the configuration file. If both are given, the version must match. If the assembly is missing from the metadata table, it is automatically filled in with that from the configuration file. There is currently no API endpoint to query the Sci-ModoM assembly version. During "fetch", the assembly is added to the metadata table using the value from the configuration file.
+
+* The list of datasets is filtered on the fly for each organism; the API endpoint does not currently allow query parameters.
 
 
 * TrackDb shortLabel is limited to 17 printable characters. This label is a composite of 2 values given in the configuration file. If this fail with `pydantic_core._pydantic_core.ValidationError ... short_label ... String should have at most 17 characters`, change values in the configuration file.
@@ -85,6 +87,25 @@ warning: missing description page for track. Add 'html SciModoM_dataset00001m6A.
 warning: missing description page for track. Add 'html SciModoM_dataset00002Y.html' line to the 'SciModoM_dataset00002Y' track stanza.
 warning: missing description page for track. Add 'html SciModoM_dataset00003m6A.html' line to the 'SciModoM_dataset00003m6A' track stanza.
 ```
+ 
+* models serialization e.g.
+
+```python
+class UserModel(BaseModel):
+    username: str
+    password: str
+    @model_serializer(mode='plain')
+    def serialize_model(self) -> str:
+        attrs = [self.username, self.password]
+        return "\n".join(attrs).rstrip() + "\n"
+```
+
+
+#### Sci-ModoM
+
+* API: dataset/list_all (e.g. with params per taxa or modification)
+* API: version/assembly
+
 
 ## Testing
 

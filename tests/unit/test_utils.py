@@ -15,6 +15,9 @@ from scimodhub.models import MetadataRow, TrackDb, TrackHubConfig
 METADATA_TBL = """project_id\tdataset_id\ttaxa_id\trna\tmodomics_sname\ttech\tcto\tbedrmod_path
 WrBiNJCZ\ta7o5Kmjr4Tdp\t9606\tWTS\tm6A,Y\tpsi-co-mAFiA\tHEK293T\tpath"""
 
+METADATA_TBL_ASSEMBLY = """project_id\tdataset_id\ttaxa_id\tassembly\trna\tmodomics_sname\ttech\tcto\tbedrmod_path
+WrBiNJCZ\ta7o5Kmjr4Tdp\t9606\tGRCh38\tWTS\tm6A,Y\tpsi-co-mAFiA\tHEK293T\tpath"""
+
 EXPECTED_TBL = [
     MetadataRow(
         dataset_id="a7o5Kmjr4Tdp",
@@ -26,7 +29,18 @@ EXPECTED_TBL = [
         tech="psi-co-mAFiA",
         cto="HEK293T",
         bedrmod_path=Path("path"),
-    )
+    ),
+    MetadataRow(
+        dataset_id="a7o5Kmjr4Tdp",
+        project_id="WrBiNJCZ",
+        taxa_id=9606,
+        assembly="GRCh38",
+        rna="WTS",
+        modomics_sname="m6A,Y",
+        tech="psi-co-mAFiA",
+        cto="HEK293T",
+        bedrmod_path=None,
+    ),
 ]
 
 CONFIG = {
@@ -66,10 +80,32 @@ HUB_CONFIG = TrackHubConfig(
 )
 
 
-def test_load_metadata():
+def test_load_metadata(caplog):
     assembly = "GRCh38"
     rows = load_metadata(StringIO(METADATA_TBL), assembly)
     assert rows[0] == EXPECTED_TBL[0]
+    assert len(rows) == 1
+
+    rows = load_metadata(StringIO(METADATA_TBL_ASSEMBLY), assembly)
+    assert rows[0] == EXPECTED_TBL[0]
+    assert len(rows) == 1
+
+    tbl = METADATA_TBL_ASSEMBLY.replace(r"GRCh38", "ASSEMBLY")
+    rows = load_metadata(StringIO(tbl), assembly)
+    assert len(rows) == 0
+    assert caplog.messages == [
+        "Skipping a7o5Kmjr4Tdp: Assembly: ASSEMBLY (metadata) != GRCh38 (config)."
+    ]
+    caplog.clear()
+
+    tbl = METADATA_TBL.replace("\tbedrmod_path", "")
+    tbl = tbl.replace("\tpath", "")
+    rows = load_metadata(StringIO(tbl), assembly)
+    assert caplog.messages == ["Skipping a7o5Kmjr4Tdp: Missing 'bedrmod_path'"]
+    assert len(rows) == 0
+
+    rows = load_metadata(StringIO(tbl), assembly, allow_missing=True)
+    assert rows[0] == EXPECTED_TBL[1]
     assert len(rows) == 1
 
 

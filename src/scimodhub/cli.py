@@ -7,7 +7,8 @@ from pathlib import Path
 import logging
 
 from scimodhub.build import build_tracks
-
+from scimodhub.fetch import fetch
+from scimodhub.utils import add_logging_options, update_logging
 
 logger = logging.getLogger(__name__)
 
@@ -20,22 +21,27 @@ def main() -> None:
     parser.add_argument(
         "--config", required=True, help="Required YAML configuration file."
     )
-
     subparsers = parser.add_subparsers(dest="cmd", required=True)
-    fetch_parser = subparsers.add_parser("fetch", help="Fetch data from Sci-ModoM.")
-    fetch_parser.add_argument(
-        "--api-version", type=str, default="v0", help="Sci-ModoM API version"
+    # fetch
+    fetch_parser = subparsers.add_parser(
+        "fetch",
+        help="Fetch data from Sci-ModoM.",
     )
     fetch_parser.add_argument(
-        "--metadata-only",
-        action="store_true",
-        help="Download metadata only; otherwise also download bedRMod files.",
+        "-v",
+        "--api-version",
+        type=str,
+        default="v0",
+        help="Sci-ModoM API version",
     )
-    # get for organisms in config
-    # get chrom size if not specified, write to work dir same as for build (utils) CONVERT !!!:
-    # api version, use dict to map end points with version, now only v0 (module) - option
-    # write browse to work dir, and final manifest from config (dont overwrite)
-    # get each bedrmod file from manifest, log any missing, update manifest - option (only metadata and/or data)
+    fetch_parser.add_argument(
+        "-e",
+        "--eufid",
+        type=str,
+        nargs="*",
+        help="Fetch only these datasets.",
+    )
+    # build
     build_parser = subparsers.add_parser("build", help="Build a track hub")
     build_parser.add_argument(
         "--skip-call",
@@ -43,19 +49,22 @@ def main() -> None:
         help="Create hub but skip calls to bedToBigBed.",
     )
     build_parser.add_argument(
+        "-w",
         "--max-workers",
         type=int,
         default=None,
         help="Max. worker threads to execute calls asynchronously.",
     )
+    add_logging_options(parser)
     args = parser.parse_args()
+    update_logging(args)
 
     logger.info("[scimodhub]: {}".format(" ".join(sys.argv)))
 
     config = yaml.safe_load(Path(args.config).read_text(encoding="utf-8"))
 
     if args.cmd == "fetch":
-        pass
+        fetch(config, args.api_version, args.eufid)
     else:
         if not args.skip_call:
             if shutil.which("bedToBigBed") is None:

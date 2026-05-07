@@ -20,7 +20,7 @@ class MetadataRow(BaseModel):
     modomics_sname: Annotated[str, Field(min_length=1, max_length=255)]
     tech: Annotated[str, Field(min_length=1, max_length=255)]
     cto: Annotated[str, Field(min_length=1, max_length=255)]
-    bedrmod_path: Path
+    bedrmod_path: Path | None
 
 
 # bedRMod
