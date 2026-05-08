@@ -144,9 +144,14 @@ def get_type(hub_cfg: TrackHubConfig) -> str:
 def add_logging_options(parser, default_log_file=""):
     """Add logging options."""
     logging_options = parser.add_argument_group("logging options")
-    default_log_file = ""
-    logging_level_choices = ["NOTSET", "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
-    default_logging_level = "WARNING"
+    logging_level_choices = [
+        "NOTSET",
+        "DEBUG",
+        "INFO",
+        "WARNING",
+        "ERROR",
+        "CRITICAL",
+    ]
     logging_options.add_argument(
         "--log-file", help="Log to file.", default=default_log_file
     )
@@ -157,7 +162,7 @@ def add_logging_options(parser, default_log_file=""):
         "--logging-level",
         help="Level for all logs.",
         choices=logging_level_choices,
-        default=default_logging_level,
+        default="WARNING",
     )
 
 
