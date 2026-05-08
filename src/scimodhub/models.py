@@ -26,8 +26,8 @@ class MetadataRow(BaseModel):
 # bedRMod
 
 NonNegativInt = Annotated[int, Field(ge=0)]
-Score = Annotated[int, Field(ge=0, le=1000)]
-PositivePercentInt = Annotated[int, Field(gt=0, le=100)]
+PositiveInt = Annotated[int, Field(gt=0)]
+PercentFloat = Annotated[float, Field(ge=0, le=100)]
 
 
 class EufRecord(BaseModel):
@@ -37,13 +37,13 @@ class EufRecord(BaseModel):
     start: NonNegativInt
     end: NonNegativInt
     name: Annotated[str, Field(min_length=1, max_length=128)]
-    score: Score
+    score: PositiveInt
     strand: Annotated[str, Field(pattern=r"^[\+\-\.]$")]
     thick_start: NonNegativInt
     thick_end: NonNegativInt
     item_rgb: str
-    coverage: NonNegativInt
-    frequency: PositivePercentInt
+    coverage: PositiveInt
+    frequency: PercentFloat
 
     @model_validator(mode="after")
     def check_start_end(self) -> Self:

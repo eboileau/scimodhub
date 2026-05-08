@@ -58,16 +58,16 @@ RECORDS = [
     ),
 ]
 
-EXPECTED_BED = """chr1\t102\t103\tm6A\t10\t+\t102\t103\t204,0,51\t50\t80
-chr1\t105\t106\tY\t20\t+\t105\t106\t128,0,128\t20\t50
+EXPECTED_BED = """chr1\t102\t103\tm6A\t10\t+\t102\t103\t204,0,51\t50\t80.0
+chr1\t105\t106\tY\t20\t+\t105\t106\t128,0,128\t20\t50.0
 """
 
-EXPECTED_BED_ZERO = """chr1\t102\t103\tm6A\t0\t+\t102\t103\t204,0,51\t50\t80\t10
-chr1\t105\t106\tY\t0\t+\t105\t106\t128,0,128\t20\t50\t20
+EXPECTED_BED_ZERO = """chr1\t102\t103\tm6A\t0\t+\t102\t103\t204,0,51\t50\t80.0\t10
+chr1\t105\t106\tY\t0\t+\t105\t106\t128,0,128\t20\t50.0\t20
 """
 
-EXPECTED_BED_COV = """chr1\t102\t103\tm6A\t50\t+\t102\t103\t204,0,51\t50\t80
-chr1\t105\t106\tY\t20\t+\t105\t106\t128,0,128\t20\t50
+EXPECTED_BED_COV = """chr1\t102\t103\tm6A\t50\t+\t102\t103\t204,0,51\t50\t80.0
+chr1\t105\t106\tY\t20\t+\t105\t106\t128,0,128\t20\t50.0
 """
 
 DEFAULT_SCHEMA = """table bedRMod

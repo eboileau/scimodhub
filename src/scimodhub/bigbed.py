@@ -96,6 +96,7 @@ def _generate_records(
                 record.frequency, hub_cfg.rgb_min, hub_cfg.rgb_max
             ),
             str(record.coverage),
+            # f"{record.frequency:.2f}",
             str(record.frequency),
         ]
         if raw_score is not None:

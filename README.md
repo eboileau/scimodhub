@@ -100,6 +100,8 @@ class UserModel(BaseModel):
         return "\n".join(attrs).rstrip() + "\n"
 ```
 
+* Frequency definition (float/decimal, etc...) and representation on file (read/write) vs. DB/DTO.
+
 
 #### Sci-ModoM
 
