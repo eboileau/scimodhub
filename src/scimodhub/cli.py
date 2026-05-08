@@ -8,7 +8,12 @@ import logging
 
 from scimodhub.build import build_tracks
 from scimodhub.fetch import fetch
-from scimodhub.utils import add_logging_options, update_logging
+from scimodhub.utils import (
+    add_logging_options,
+    update_logging,
+    get_tmp_dir,
+    get_hub_dir,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +60,15 @@ def main() -> None:
         default=None,
         help="Max. worker threads to execute calls asynchronously.",
     )
+    clean_parser = subparsers.add_parser(
+        "clean",
+        help="Remove temporary directories.",
+    )
+    clean_parser.add_argument(
+        "--all",
+        action="store_true",
+        help="Delete both 'working' (temporary) and 'staging' directories.",
+    )
     add_logging_options(parser)
     args = parser.parse_args()
     update_logging(args)
@@ -65,12 +79,23 @@ def main() -> None:
 
     if args.cmd == "fetch":
         fetch(config, args.api_version, args.eufid)
-    else:
+    elif args.cmd == "build":
         if not args.skip_call:
             if shutil.which("bedToBigBed") is None:
                 logger.error("FileNotFoundError: No such file: 'bedToBigBed'")
                 return
         build_tracks(config, args.skip_call, args.max_workers)
+    elif args.cmd == "clean":
+        tmp_root = get_tmp_dir(config)
+        shutil.rmtree(tmp_root, ignore_errors=True)
+        if args.all:
+            hub_root = get_hub_dir(config)
+            proceed = input(f"Delete {hub_root.as_posix()}?")
+            if proceed.lower() in ["y", "yes"]:
+                try:
+                    shutil.rmtree(hub_root)
+                except Exception as err:
+                    logging.error(f"Cannot remove directory: {err}")
 
 
 if __name__ == "__main__":

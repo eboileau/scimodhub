@@ -27,7 +27,7 @@ cd scripts
 
 and make them visible. `bedToBigBed` is required; the others are optional. Chromosome information is downloaded from Sci-ModoM or, optionally, using `fetchChromSizes`.
 
-### Configuration
+### Usage and configuration
 
 To build a track hub, **scimodhub** needs a list of bedRmod files and associated metadata. To prepare this list and download the required data, use the `fetch` command with `metadata_table: null`. A `metadata_table` can also be given as input to the `build` command. This table contains one row per dataset file. Required columns are:
 
@@ -61,6 +61,10 @@ If calling `fetch` first, `metadata_table` and `chrom.sizes` do not need to be u
 
 | Ensembl | UCSC |
 
+The content of these files (chromosome and mapping) is not validated.
+
+The directories given by `working_dir` and `staging_dir` are created on demand and their content is always overwritten. To remove these directories use `clean`.
+
 For further configuration parameters, see the [example configuration file](data/examples/config.yaml).
 
 #### Score
@@ -77,7 +81,6 @@ Note that a bedRMod file with score values outside the range [0, 1000] may not o
 
 ### Commands
 
-overwrite
 
 #### Fetch
 
@@ -147,6 +150,8 @@ warning: missing description page for track. Add 'html SciModoM_dataset00003m6A.
 
 
 ### Todos
+
+* Organisms given in the configuration file are not 'validated' against those available in Sci-ModoM.
 
 * genomes.txt: metaDb - the path to an optional tagStorm file that has the metadata for each track. Each track with metadata should have a "meta" tag specified in the trackDb stanza for that track and a "meta" tag in the tagStorm file.
 

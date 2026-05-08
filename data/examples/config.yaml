@@ -4,7 +4,7 @@
 metadata_table: data/examples/manifest.tsv # null
 # The hub directory. Created if does not exist.
 staging_dir: local/staging
-# Data wrangling directory. Created if does not exist.
+# Data wrangling temporary directory. Created if does not exist.
 working_dir: local/working
 
 # EUF/bedRMod compatible versions.
