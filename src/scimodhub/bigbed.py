@@ -41,7 +41,7 @@ def _get_as_schema(hub_cfg: TrackHubConfig) -> AutoSqlSchema:
         AutoSqlField(astype="uint", name="thickEnd", description="Thick end"),
         AutoSqlField(
             astype="uint",
-            name="itemRgb",
+            name="reserved",
             description="Blue (0) to red (100) percent modified",
         ),
         AutoSqlField(astype="uint", name="coverage", description="Coverage"),

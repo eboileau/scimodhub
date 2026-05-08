@@ -60,7 +60,7 @@ hub:
   # The bedRMod score policy defines how to handle the 5th field:
   # preserve (keep score), zero (set score to 0, add raw_score to 12th field)
   # coverage (replace score with coverage - coverage > 0,  add raw_score to 12th field, EUF version < 2)
-  score_policy: replace
+  score_policy: coverage
   # Defaults
   max_check_boxes: 20
   hide_empty_subtracks: true
