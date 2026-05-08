@@ -143,7 +143,7 @@ def build_organism_tracks(
     hub_root = get_hub_dir(config)
 
     # I/O
-    chrom_file = Path(org_cfg["chroms"]["mapping"])
+    chrom_file = Path(org_cfg["chrom"]["mapping"])
     if not chrom_file.exists():
         raise FileNotFoundError(
             f"FileNotFoundError: No such file: '{chrom_file.as_posix()}'."
@@ -153,10 +153,10 @@ def build_organism_tracks(
 
     chrom_sizes = None
     if not skip_call:
-        if org_cfg["chroms"]["sizes"] is None:
+        if org_cfg["chrom"]["sizes"] is None:
             chrom_sizes = Path(tmp_dir, "chrom.sizes")
         else:
-            chrom_sizes = Path(org_cfg["chroms"]["sizes"])
+            chrom_sizes = Path(org_cfg["chrom"]["sizes"])
         if not chrom_sizes.exists():
             raise FileNotFoundError(
                 f"FileNotFoundError: No such file: '{chrom_sizes.as_posix()}'."

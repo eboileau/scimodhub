@@ -21,7 +21,7 @@ genomes:
     taxa_id: 9606
     assembly:
       GRCh38: "hg38"
-    chroms:
+    chrom:
       mapping: data/GRCh38_ensembl2UCSC.tsv
       sizes: local/hg38.chrom.sizes # null
     label: "human"
@@ -29,7 +29,7 @@ genomes:
     taxa_id: 10090
     assembly:
       GRCm39: "mm39"
-    chroms:
+    chrom:
       mapping: data/GRCm39_ensembl2UCSC.tsv
       sizes: local/mm39.chrom.sizes #null
     label: "mouse"

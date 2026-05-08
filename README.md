@@ -3,7 +3,7 @@
 Sci-ModoM UCSC track hub generator. **scimodhub** fetches metadata and data from [Sci-ModoM](https://scimodom.dieterichlab.org) and builds a track hub using a *faceted composite*, by modification, cell type, tissue or organism, and technology.
 
 <p align="center">
-  <a href="https://trackhub.dieterichlab.org/eboileau/SciModHub/"><img alt="Sci-ModHub" src="https://github.com/eboileau/scimodhub/raw/master/docs/source/_static/logo.png"></a>
+  <a href="https://trackhub.dieterichlab.org/eboileau/SciModHub/"><img alt="Sci-ModHub" src="https://github.com/eboileau/scimodhub/blob/main/docs/source/_static/logo_hub.png"></a>
 </p>
 
 ---
@@ -59,6 +59,8 @@ genomes:
 
 If calling `fetch` first, `metadata_table` and `chrom.sizes` do not need to be updated, the `build` call will recognize the downloaded files automatically. If values are given for any one or both of these, the `fetch` call will skip download, and `build` will use these values to read in the corresponding files. The chromosome information must follow the UCSC nomenclature. The `chrom.mapping` is **always** required. This table contains one row per chromosome, without a header. Required columns are:
 
+| columns 1 | columns 2 |
+| :--- | :--- |
 | Ensembl | UCSC |
 
 The content of these files (chromosome and mapping) is not validated.
@@ -71,7 +73,7 @@ For further configuration parameters, see the [example configuration file](data/
 
 The `score_policy` defines how to handle the bedRmod score. According to EUF [version 1.8](https://dieterich-lab.github.io/euf-specs/bedRModv1.8.pdf), score is `Int [0, 1000]`. The latest specifications ([version 2](https://dieterich-lab.github.io/euf-specs/bedRModv2.pdf)) allow any representation or measure of confidence by defining score as `String [\x20-\x7e]{1,255}`. This provides in the short-to-medium-term a lightweight, flexible, and backward compatible framework that allows for immediate and broad usability, while leaving room for versioned improvements.
 
-The EUF specifications aim to provide guidelines for data representation and data sharing, not for estimating modification truth in general (this is a different question!). As data specs in general, they want to remain as close as possible to the raw evidence, to facilitate interoperability and reusability across disciplines. For practical purposes, and with this aim in mind, the official recommendation is to use for score the *valid coverage* which, in combination with total coverage and frequency, provides a reasonable, robust means of accumulating or comparing site evidence across datasets. This definition is 'natural' and straightforward for Nanopore, *cf.* [modkit](https://nanoporetech.github.io/modkit), but has lead to discussion regarding it's suitability for short-read-based detection technologies. Meanwhile, we need practical solution.
+The EUF specifications aim to provide guidelines for data representation and data sharing, not for estimating modification truth in general (this is a different question!). As data specs in general, they want to remain as close as possible to the raw evidence, to facilitate interoperability and reusability across disciplines. For practical purposes, and with this aim in mind, the official recommendation is to use for score the *valid coverage* which, in combination with total coverage and frequency, provides a reasonable, robust means of accumulating or comparing site evidence across datasets. This definition is 'natural' and straightforward for Nanopore, *cf.* [modkit](https://nanoporetech.github.io/modkit), but has lead to discussion regarding it's suitability for short-read-based detection technologies. Meanwhile, we need a practical solution.
 
 A lot of existing short-read data are just not *quantitative* enough to be included in Sci-ModoM. These data not only fall short of providing any measure of confidence whatsoever, but in most cases, the authors did not even release enough information to 'fill in' the missing pieces (that's precisely why EUF specifications are important!).
 

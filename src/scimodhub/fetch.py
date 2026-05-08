@@ -127,8 +127,8 @@ def fetch_organism(
     hub_dir.mkdir(parents=True, exist_ok=True)
 
     # I/O
-    if org_cfg["chroms"]["sizes"] is None:
-        chrom_file = Path(org_cfg["chroms"]["mapping"])
+    if org_cfg["chrom"]["sizes"] is None:
+        chrom_file = Path(org_cfg["chrom"]["mapping"])
         if not chrom_file.exists():
             logger.error(f"FileNotFoundError: No such file: '{chrom_file.as_posix()}'")
             return

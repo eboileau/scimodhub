@@ -50,7 +50,7 @@ CONFIG = {
         "h_sapiens": {
             "taxa_id": 9606,
             "assembly": {"GRCh38": "hg38"},
-            "chroms": {"mapping": "path/to/mapping.tsv", "sizes": None},
+            "chrom": {"mapping": "path/to/mapping.tsv", "sizes": None},
             "label": "H. sapiens",
         },
     },
