@@ -1,4 +1,5 @@
 import logging
+import json
 from pathlib import Path
 from typing import TextIO
 
@@ -23,6 +24,15 @@ logger = logging.getLogger(__name__)
 def _overwrite_metadata(handle: TextIO, rows: list[MetadataRow]) -> None:
     dumps = [row.model_dump() for row in rows]
     pd.DataFrame(dumps).to_csv(handle, sep="\t", index=False, header=True)
+
+
+def _write_modomics(handle: TextIO, version: str) -> None:
+    response = requests.get(get_request(version, "modomics"))
+    response.raise_for_status()
+    d = dict()
+    for val in response.json():
+        d[val["modomics_sname"]] = val["id"]
+    json.dump(d, handle, indent="\t")
 
 
 def _write_metadata(
@@ -168,3 +178,8 @@ def fetch(config: dict, api_version: str, include: list[str]) -> None:
             organism,
             include,
         )
+    tmp_root = get_tmp_dir(config)
+    modomics_file = Path(tmp_root, "modomics.json")
+    logger.info(f"Writing: {modomics_file.as_posix()}")
+    with modomics_file.open("w", encoding="utf-8") as fh:
+        _write_modomics(fh, api_version)

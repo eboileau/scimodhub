@@ -102,6 +102,10 @@ class UserModel(BaseModel):
 
 * Frequency definition (float/decimal, etc...) and representation on file (read/write) vs. DB/DTO.
 
+* Score: models allows for `score: NonNegativInt` whereas it should really be `score: PositiveInt`, but since we need to read the current
+bed files (1.8), we need to allow score = 0.
+
+
 
 #### Sci-ModoM
 

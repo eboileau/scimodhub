@@ -66,8 +66,8 @@ EXPECTED_BED_ZERO = """chr1\t102\t103\tm6A\t0\t+\t102\t103\t204,0,51\t50\t80.0\t
 chr1\t105\t106\tY\t0\t+\t105\t106\t128,0,128\t20\t50.0\t20
 """
 
-EXPECTED_BED_COV = """chr1\t102\t103\tm6A\t50\t+\t102\t103\t204,0,51\t50\t80.0
-chr1\t105\t106\tY\t20\t+\t105\t106\t128,0,128\t20\t50.0
+EXPECTED_BED_COV = """chr1\t102\t103\tm6A\t0\t+\t102\t103\t204,0,51\t50\t80.0\t50
+chr1\t105\t106\tY\t0\t+\t105\t106\t128,0,128\t20\t50.0\t20
 """
 
 DEFAULT_SCHEMA = """table bedRMod
@@ -143,8 +143,14 @@ def test_write_autosql():
     with MockStringIO() as fh:
         _write_autosql(fh, HUB_CONFIG)
     assert fh.final_content == DEFAULT_SCHEMA
+
     hub_cfg = HUB_CONFIG.model_copy()
     hub_cfg.score_policy = "zero"
+    with MockStringIO() as fh:
+        _write_autosql(fh, hub_cfg)
+    assert fh.final_content == ZERO_SCHEMA
+
+    hub_cfg.score_policy = "coverage"
     with MockStringIO() as fh:
         _write_autosql(fh, hub_cfg)
     assert fh.final_content == ZERO_SCHEMA

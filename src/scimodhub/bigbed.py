@@ -49,7 +49,7 @@ def _get_as_schema(hub_cfg: TrackHubConfig) -> AutoSqlSchema:
         AutoSqlField(astype="uint", name="rawScore", description="bedRmod score"),
     )
     policy = hub_cfg.score_policy.lower()
-    if policy == "preserve":
+    if policy not in ["zero", "coverage"]:
         fields = fields[:-1]
     return AutoSqlSchema(
         table="bedRMod",
@@ -71,7 +71,7 @@ def _get_score(record: EufRecord, policy: str) -> tuple[int, int | None]:
     if policy == "zero":
         return 0, record.score
     elif policy == "coverage":
-        return record.coverage, None
+        return 0, record.coverage
     else:
         return record.score, None
 

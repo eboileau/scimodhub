@@ -18,7 +18,7 @@ from scimodhub.utils import get_type
 def _get_mouse_over(hub_cfg: TrackHubConfig) -> str:
     policy = hub_cfg.score_policy.lower()
     score_str = "score"
-    if policy == "zero":
+    if policy in ["zero", "coverage"]:
         score_str = "rawScore"
     return (
         f"$name | score: ${score_str} | "

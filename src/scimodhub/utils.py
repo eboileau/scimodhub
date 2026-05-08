@@ -94,11 +94,14 @@ def get_org_cfg_and_assembly(config: dict, organism: str) -> tuple[dict, str]:
     return org_cfg, assembly
 
 
-def get_tmp_dir(config: dict, organism: str) -> Path:
+def get_tmp_dir(config: dict, organism: str | None = None) -> Path:
     """Create path to temporary directory."""
+    tmp_root = Path(config["working_dir"])
+    if organism is None:
+        return tmp_root
     org_cfg, assembly = get_org_cfg_and_assembly(config, organism)
     parent = re.sub(r"[^a-zA-Z0-9]", "", organism)
-    return Path(config["working_dir"], parent, org_cfg["assembly"][assembly])
+    return Path(tmp_root, parent, org_cfg["assembly"][assembly])
 
 
 def get_hub_dir(config: dict, organism: str | None = None) -> Path:
@@ -133,7 +136,7 @@ def get_type(hub_cfg: TrackHubConfig) -> str:
     is "zero", score is added as 12th field.
     """
     policy = hub_cfg.score_policy.lower()
-    if policy == "zero":
+    if policy in ["zero", "coverage"]:
         return "9 + 3"
     return "9 + 2"
 

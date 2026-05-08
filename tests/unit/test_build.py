@@ -74,6 +74,22 @@ EXPECTED_SUBTRACK_SPEC = SubtrackSpec(
 )
 
 
+EXPECTED_SUBTRACK_SPEC_MODOMICS = SubtrackSpec(
+    primary_key="a7o5Kmjr4Tdp2000000009U",
+    subtrack="trackDbName_a7o5Kmjr4Tdp2000000009U",
+    dataset_id="a7o5Kmjr4Tdp",
+    rna="WTS",
+    modification="Y",
+    tech="psi-co-mAFiA",
+    cto="HEK293T",
+    short_label="Y",
+    long_label="EUFID:a7o5Kmjr4Tdp | Y HEK293T psi-co-mAFiA",
+    hub_root=Path("staging/myHub"),
+    hub_dir=Path("staging/myHub/hsapiens/hg38"),
+    tmp_dir=Path("work/hsapiens/hg38"),
+)
+
+
 class MockEufImporter:
     RESULT = [
         EufRecord(
@@ -146,8 +162,20 @@ def test_add_subtrack_spec():
         METADATA_ROW,
         HUB_CONFIG,
         "Y",
+        {},
         Path("staging", "myHub"),
         Path("staging", "myHub", "hsapiens", "hg38"),
         Path("work", "hsapiens", "hg38"),
     )
     assert spec == EXPECTED_SUBTRACK_SPEC
+
+    spec = _add_subtrack_spec(
+        METADATA_ROW,
+        HUB_CONFIG,
+        "Y",
+        {"Y": "2000000009U"},
+        Path("staging", "myHub"),
+        Path("staging", "myHub", "hsapiens", "hg38"),
+        Path("work", "hsapiens", "hg38"),
+    )
+    assert spec == EXPECTED_SUBTRACK_SPEC_MODOMICS

@@ -148,8 +148,16 @@ def test_get_mouse_over():
     assert mouse_over == (
         "$name | score: $score | coverage: $coverage | percent modified: $frequency"
     )
+
     hub_cfg = EXPECTED_HUB_CONFIG.model_copy()
     hub_cfg.score_policy = "zero"
+    mouse_over = _get_mouse_over(hub_cfg)
+    assert mouse_over == (
+        "$name | score: $rawScore | "
+        "coverage: $coverage | percent modified: $frequency"
+    )
+
+    hub_cfg.score_policy = "coverage"
     mouse_over = _get_mouse_over(hub_cfg)
     assert mouse_over == (
         "$name | score: $rawScore | "

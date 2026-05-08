@@ -1,5 +1,6 @@
 import os
 import re
+import json
 import logging
 from pathlib import Path
 from typing import Generator
@@ -67,17 +68,17 @@ def _validate_header(
         raise SpecsError(f"Assembly: {header_assembly} ({dataset_id}) != {assembly}.")
 
 
-# EUFID is [0-9A-Za-z] (short UUID)
-# TODO: only modification can be problematic
 def _add_subtrack_spec(
     row: MetadataRow,
     hub_cfg: TrackHubConfig,
     modification: str,
+    modomics: dict[str, str],
     hub_root: Path,
     hub_dir: Path,
     tmp_dir: Path,
 ) -> SubtrackSpec:
-    tid = f"{row.dataset_id}{modification}"
+    sub = modomics[modification] if modomics else modification
+    tid = f"{row.dataset_id}{sub}"
     return SubtrackSpec(
         primary_key=tid,
         subtrack=f"{hub_cfg.track_db.name}_{tid}",
@@ -98,6 +99,7 @@ def _prepare_subtracks(
     rows: list[MetadataRow],
     hub_cfg: TrackHubConfig,
     versions: list[str],
+    modomics: dict[str, str],
     hub_root: Path,
     hub_dir: Path,
     tmp_dir: Path,
@@ -112,7 +114,7 @@ def _prepare_subtracks(
                 # parse records - "split" by modification for faceting
                 for modification in row.modomics_sname.split(","):
                     spec = _add_subtrack_spec(
-                        row, hub_cfg, modification, hub_root, hub_dir, tmp_dir
+                        row, hub_cfg, modification, modomics, hub_root, hub_dir, tmp_dir
                     )
                     subtracks.append(
                         Subtrack(spec=spec, records=_get_records(records, modification))
@@ -125,6 +127,7 @@ def _prepare_subtracks(
 def build_organism_tracks(
     config: dict,
     organism: str,
+    modomics: dict[str, str],
     skip_call: bool = False,
     max_workers: int | None = None,
 ) -> tuple[str, str]:
@@ -175,7 +178,7 @@ def build_organism_tracks(
 
     hub_cfg = track_db_config_from_dict(config, org_cfg["label"])
     subtracks = _prepare_subtracks(
-        rows, hub_cfg, euf_versions, hub_root, hub_dir, tmp_dir
+        rows, hub_cfg, euf_versions, modomics, hub_root, hub_dir, tmp_dir
     )
     with open(Path(hub_dir, "metadata.tsv"), "w") as fh:
         write_metadata(fh, subtracks)
@@ -209,12 +212,22 @@ def build_tracks(
     """Build tracks."""
     hub_root = get_hub_dir(config)
     hub_cfg = hub_config_from_dict(config)
+    tmp_root = get_tmp_dir(config)
+    modomics_file = Path(tmp_root, "modomics.json")
+    if modomics_file.exists():
+        try:
+            with modomics_file.open("r") as fh:
+                modomics = json.load(fh)
+            logger.info(f"Using: {modomics_file.as_posix()} (MODOMICS code).")
+        except Exception:
+            modomics = dict()
     genomes = []
     for organism in config["genomes"]["include"]:
         try:
             assembly, rel_path = build_organism_tracks(
                 config,
                 organism,
+                modomics,
                 skip_call=skip_call,
                 max_workers=max_workers,
             )

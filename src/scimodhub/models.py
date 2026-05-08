@@ -37,7 +37,8 @@ class EufRecord(BaseModel):
     start: NonNegativInt
     end: NonNegativInt
     name: Annotated[str, Field(min_length=1, max_length=128)]
-    score: PositiveInt
+    score: NonNegativInt
+    # score: PositiveInt
     strand: Annotated[str, Field(pattern=r"^[\+\-\.]$")]
     thick_start: NonNegativInt
     thick_end: NonNegativInt

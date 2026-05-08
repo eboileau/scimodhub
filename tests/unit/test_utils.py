@@ -118,10 +118,14 @@ def test_get_tmp_dir():
     tmp_dir = get_tmp_dir(CONFIG, "h_sapiens")
     assert tmp_dir == Path("working", "hsapiens", "hg38")
 
+    tmp_dir = get_tmp_dir(CONFIG)
+    assert tmp_dir == Path("working")
+
 
 def test_get_hub_dir():
     hub_dir = get_hub_dir(CONFIG, "h_sapiens")
     assert hub_dir == Path("staging", "MyHub", "hsapiens", "hg38")
+
     hub_dir = get_hub_dir(CONFIG)
     assert hub_dir == Path("staging", "MyHub")
 
@@ -134,7 +138,12 @@ def test_get_chrom_mapping():
 def test_get_type():
     bed_type = get_type(HUB_CONFIG)
     assert bed_type == "9 + 2"
+
     hub_cfg = HUB_CONFIG.model_copy()
     hub_cfg.score_policy = "zero"
+    bed_type = get_type(hub_cfg)
+    assert bed_type == "9 + 3"
+
+    hub_cfg.score_policy = "coverage"
     bed_type = get_type(hub_cfg)
     assert bed_type == "9 + 3"

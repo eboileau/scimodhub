@@ -2,13 +2,13 @@ from urllib.parse import urlparse, urlunparse, urlencode, urljoin
 
 
 GITHUB_REST = "https://api.github.com/repos/"
-MODOMICS_REST = "https://www.genesilico.pl/modomics/api/"
 SCIMODOM_REST = "https://scimodom.dieterichlab.org/"
 SCIMODOM_ENDPOINTS = {
     "v0": {
         "chroms": "api/v0/chroms/",
         "dataset": "api/v0/dataset/list_all",
         "download": "api/v0/transfer/dataset/",
+        "modomics": "api/v0/modomics",
     },
 }
 

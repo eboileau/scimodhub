@@ -1,4 +1,5 @@
 from pathlib import Path
+import json
 
 import pytest
 import requests
@@ -8,7 +9,7 @@ from scimodhub.fetch import (
     _write_metadata,
     _overwrite_metadata,
     _write_chroms,
-    _get_dataset,
+    _write_modomics,
     _update_rows,
 )
 from scimodhub.utils import EmptyDataError
@@ -20,6 +21,8 @@ CHROM_SIZES = "chr1\t248956422\nchr2\t242193529\n"
 METADATA_TBL = """dataset_id\tproject_id\ttaxa_id\tassembly\trna\tmodomics_sname\ttech\tcto\tbedrmod_path
 3XXcptjDwfaK\t49mrpvBp\t9606\tGRCh38\tWTS\tm5C,Y\tm5C-TAC-seq\tHEK293T\tpath
 """
+
+MODOMICS = {"po2yW": "2034832551G", "nm5U": "2000000510C"}
 
 TBL = [
     MetadataRow(
@@ -58,6 +61,19 @@ def test_write_chroms(mocker):
     with MockStringIO() as fh:
         _write_chroms(fh, "v0", 9606, {"1": "chr1", "2": "chr2"})
     assert fh.final_content == CHROM_SIZES
+
+
+def test_write_modomics(mocker):
+    mock_get = mocker.patch("scimodhub.fetch.requests.get")
+    response = mock_get.return_value
+    response.status_code = 200
+    response.json.return_value = [
+        {"id": "2034832551G", "modomics_sname": "po2yW"},
+        {"id": "2000000510C", "modomics_sname": "nm5U"},
+    ]
+    with MockStringIO() as fh:
+        _write_modomics(fh, "v0")
+    assert json.loads(fh.final_content) == MODOMICS
 
 
 def test_write_metadata(mocker):
