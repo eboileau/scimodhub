@@ -62,7 +62,7 @@ def track_db_config_from_dict(config: dict, label: str) -> TrackHubConfig:
     return TrackHubConfig(
         track_db=track_db,
         score_policy=str(hub_cfg.get("score_policy", "preserve")),
-        score_display=str(hub_cfg.get("score_policy", True)),
+        score_display=str(hub_cfg.get("score_display", True)),
         max_check_boxes=int(hub_cfg.get("max_check_boxes", 20)),
         hide_empty=bool(hub_cfg.get("hide_empty_subtracks", True)),
         center_labels=bool(hub_cfg.get("center_labels_dense", True)),
