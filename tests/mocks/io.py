@@ -2,8 +2,8 @@ from io import StringIO
 
 
 class MockStringIO(StringIO):
-    def __init__(self, **kargs):
-        super(MockStringIO, self).__init__(**kargs)
+    def __init__(self, **kwargs):
+        super(MockStringIO, self).__init__(**kwargs)
         self.final_content = None
 
     def close(self):

@@ -77,6 +77,8 @@ class Hub(BaseModel):
         str, Field(min_length=1, max_length=80, pattern=r"[a-zA-Z0-9 ]")
     ]
     email: EmailStr
+    description: Path
+    image: Path | None = None
 
 
 class TrackDb(BaseModel):
@@ -96,6 +98,7 @@ class TrackHubConfig(BaseModel):
 
     track_db: TrackDb
     score_policy: str
+    score_display: bool
     max_check_boxes: int
     hide_empty: bool
     center_labels: bool
@@ -204,6 +207,7 @@ class FacetedComposite(BaseModel):
             f"longLabel {self.long_label}",
             f"type {self.track_type}",
             f"metaDataUrl {self.meta_data_url}",
+            "subtrackUrls _eufid=https://scimodom.dieterichlab.org/browse/$$",
             f"primaryKey {self.primary_key}",
             # "compositeTrack on",
             f"compositeTrack {self.mode}",

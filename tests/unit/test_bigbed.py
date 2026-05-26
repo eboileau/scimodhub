@@ -20,6 +20,7 @@ TRACKDB = TrackDb(
 HUB_CONFIG = TrackHubConfig(
     track_db=TRACKDB,
     score_policy="preserve",
+    score_display=True,
     max_check_boxes=20,
     hide_empty=True,
     center_labels=True,
@@ -76,12 +77,12 @@ DEFAULT_SCHEMA = """table bedRMod
 string\tchrom;\t"Chromosome"
 uint\tchromStart;\t"Modification start position"
 uint\tchromEnd;\t"Modification end position"
-string\tname;\t"Modification short name"
-uint\tscore;\t"bedRMod score or 0; off"
+string\tname;\t"Modification (MODOMICS) short name"
+uint\tscore;\t"off"
 char[1]\tstrand;\t"Strand"
 uint\tthickStart;\t"Thick start"
 uint\tthickEnd;\t"Thick end"
-uint\titemRgb;\t"Blue (0) to red (100) percent modified"
+uint\treserved;\t"Blue (0) to red (100) percent modified"
 uint\tcoverage;\t"Coverage"
 float\tfrequency;\t"Percent modified"
 )
@@ -93,12 +94,12 @@ ZERO_SCHEMA = """table bedRMod
 string\tchrom;\t"Chromosome"
 uint\tchromStart;\t"Modification start position"
 uint\tchromEnd;\t"Modification end position"
-string\tname;\t"Modification short name"
-uint\tscore;\t"bedRMod score or 0; off"
+string\tname;\t"Modification (MODOMICS) short name"
+uint\tscore;\t"off"
 char[1]\tstrand;\t"Strand"
 uint\tthickStart;\t"Thick start"
 uint\tthickEnd;\t"Thick end"
-uint\titemRgb;\t"Blue (0) to red (100) percent modified"
+uint\treserved;\t"Blue (0) to red (100) percent modified"
 uint\tcoverage;\t"Coverage"
 float\tfrequency;\t"Percent modified"
 uint\trawScore;\t"bedRmod score"

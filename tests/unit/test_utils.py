@@ -70,6 +70,7 @@ TRACKDB = TrackDb(
 HUB_CONFIG = TrackHubConfig(
     track_db=TRACKDB,
     score_policy="preserve",
+    score_display=True,
     max_check_boxes=20,
     hide_empty=True,
     center_labels=True,

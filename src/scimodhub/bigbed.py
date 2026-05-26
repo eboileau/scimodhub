@@ -29,12 +29,12 @@ def _get_as_schema(hub_cfg: TrackHubConfig) -> AutoSqlSchema:
             astype="uint", name="chromEnd", description="Modification end position"
         ),
         AutoSqlField(
-            astype="string", name="name", description="Modification short name"
+            astype="string", name="name", description="Modification (MODOMICS) short name"
         ),
         AutoSqlField(
             astype="uint",
             name="score",
-            description="bedRMod score or 0; off",
+            description="off",
         ),
         AutoSqlField(astype="char[1]", name="strand", description="Strand"),
         AutoSqlField(astype="uint", name="thickStart", description="Thick start"),

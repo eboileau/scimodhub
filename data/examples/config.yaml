@@ -42,10 +42,15 @@ hub:
     # A single-word name of the directory containing the track hub files. Not displayed to hub users.
     name: SciModHub
     # Maximum length is 17 characters. Displayed as the hub name.
-    short_label: "Sci-ModoM Hub"
+    short_label: "Sci-ModHub"
     # Maximum length is 80 characters. Displayed in the description field.
-    long_label: "Sci-ModoM Genome Browser Tracks"
+    long_label: "Sci-ModoM Track Hub"
     email: "boileau@uni-heidelberg.de"
+    # Required: file to use for hub description - content must be valid html
+    description: docs/source/SciModHub.html
+    # Image file for description - null if unused
+    # The image name must match that used in description
+    image: docs/source/_static/logo_hub.png
   track_db:
     # The composite's track name (parent). Each subtrack name is <parentTrackName>_<primaryKeyValue>.
     # <primaryKeyValue> is derived from the metadata and used for faceting.
@@ -61,6 +66,8 @@ hub:
   # preserve (keep score), zero (set score to 0, add raw_score to 12th field)
   # coverage (replace score with coverage - coverage > 0,  add raw_score to 12th field, EUF version < 2)
   score_policy: coverage
+  # Display score/raw_score (depending on policy) in mouse over
+  score_display: False
   # Defaults
   max_check_boxes: 20
   hide_empty_subtracks: true

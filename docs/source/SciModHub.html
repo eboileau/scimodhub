@@ -1,0 +1,42 @@
+<html>
+<a href="https://scimodom.dieterichlab.org" target="_blank"><img src="logo_hub.png" width="250"></img></a>
+<h2>Sci-ModoM Track Hub</h2>
+<p>
+<h2>Description</h2>
+<p>
+<a href="https://scimodom.dieterichlab.org" target="_blank">Sci-ModoM</a>, the lighthouse for quantitative epitranscriptomics, is an open source collection of high-throughput whole-transcriptome sequencing RNA modification sites. The data in these tracks are <em>faceted</em> to reproduce the database Search interface: by <em>modification</em>, <em/>organism</em> (cell type, tissue, or organ), and <em>detection technology</em>. They are underpinned by the <a href="https://dieterich-lab.github.io/euf-specs" target="_blank">bedRMod (euf-specs)</a> format.
+<br>
+<br>
+The metadata for each dataset and subtrack is traceable via its <b>EUFID</b> to the Sci-ModoM Browse interface.
+</p>
+<h2>Display Conventions and Configuration</h2>
+<p>
+Tracks are displayed for selected dataset and toggled on/off using the track configuration page.
+<br>
+<br>
+Modifications are gradient-colored according to their <em>frequency</em> (or <em>percent modified</em>), as reported for each dataset:
+</p>
+<ul>
+<li><span style='border: 2px inset #000000; background-color:#0ABEFE;'>&nbsp;Blue&nbsp;</span> - unmodified
+<li><span style='border: 2px inset #000000; background-color:#FF0000;'>&nbsp;Red&nbsp;</span> - fully modified
+</ul>
+<p>
+bigRMod files are binary indexed versions of Browser Extensible Data (BED) files with the first nine fields being the same as BED, and an extra 2 fields for <em>coverage</em> and <em>frequency</em>. A 3rd extra field, <em>raw_score</em>, may be present to store the original bedRMod <em>score</em>.
+</p>
+<h2>Methods</h2>
+<p>
+Refer to the metadata for each track for dataset-specific methodology.
+</p>
+<h2>Data Access</h2>
+<p>
+The data used to generate these tracks are also accesible via the Sci-ModoM API in bedRMod format.
+<p>
+<h2>Credits</h2>
+<p>Thanks to the <a href="https://doi.org/10.1186/s13059-025-03824-y" target="_blank">Human RNome Project</a>. The data were integrated into the UCSC Genome Browser by ...</p>
+<h2>References</h2>
+<p>
+Boileau E, Wilhelmi H, Busch A, Cappannini, A, Hildebrand A, Bujnicki JM, Dieterich C. Sci-ModoM: a quantitative database of transcriptome-wide high-throughput RNA modification sites. Nucleic Acids Res. 2025 Jan 6;53(D1):D310-D317. doi:
+<a href="https://doi.org/10.1093/nar/gkae972" target="_blank">10.1093/nar/gkae972</a>.
+PMID: <a href="http://www.ncbi.nlm.nih.gov/pubmed/39498498" target="_blank">39498498</a>.
+</p>
+</html>

@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import TextIO
 from textwrap import dedent
+from shutil import copyfile
 
 import pandas as pd
 
@@ -16,24 +17,34 @@ from scimodhub.utils import get_type
 
 
 def _get_mouse_over(hub_cfg: TrackHubConfig) -> str:
-    policy = hub_cfg.score_policy.lower()
     score_str = "score"
-    if policy in ["zero", "coverage"]:
+    if hub_cfg.score_policy.lower() in ["zero", "coverage"]:
         score_str = "rawScore"
-    return (
-        f"$name | score: ${score_str} | "
-        "coverage: $coverage | percent modified: $frequency"
-    )
+    mouse_over = "$name | "
+    if hub_cfg.score_display:
+        mouse_over += f"score: ${score_str} | "
+    mouse_over += "coverage: $coverage | percent modified: $frequency"
+    return mouse_over
 
 
 def hub_config_from_dict(config: dict) -> TrackHubConfig:
     """Define hub configuration with defaults."""
     hub_cfg = config["hub"]
+    desc_file = hub_cfg["hub"]["description"]
+    if not Path(desc_file).exists():
+        raise FileNotFoundError(f"No such file or directory: {desc_file}")
+    img_file = hub_cfg["hub"]["image"]
+    if img_file is not None and Path(img_file).exists():
+        img = Path(img_file)
+    else:
+        img = None
     return Hub(
         name=hub_cfg["hub"]["name"],
         short_label=hub_cfg["hub"]["short_label"],
         long_label=hub_cfg["hub"]["long_label"],
         email=hub_cfg["hub"]["email"],
+        description=Path(desc_file),
+        image=img,
     )
 
 
@@ -51,6 +62,7 @@ def track_db_config_from_dict(config: dict, label: str) -> TrackHubConfig:
     return TrackHubConfig(
         track_db=track_db,
         score_policy=str(hub_cfg.get("score_policy", "preserve")),
+        score_display=str(hub_cfg.get("score_policy", True)),
         max_check_boxes=int(hub_cfg.get("max_check_boxes", 20)),
         hide_empty=bool(hub_cfg.get("hide_empty_subtracks", True)),
         center_labels=bool(hub_cfg.get("center_labels_dense", True)),
@@ -70,9 +82,9 @@ def write_metadata(handle: TextIO, subtracks: list[Subtrack]) -> None:
     rows = [
         {
             "track": p.spec.primary_key,
-            "eufid": p.spec.dataset_id,
+            "_eufid": p.spec.dataset_id,
             "modification": p.spec.modification,
-            "cellTissueOrganism": p.spec.cto,
+            "cell": p.spec.cto,
             "technology": p.spec.tech,
         }
         for p in subtracks
@@ -144,21 +156,7 @@ def write_hub_files(
     """
         )
     )
-    hub_files["description.html"].write(
-        dedent(
-            f"""\
-    <html>
-    <head><title>{hub_cfg.short_label}</title></head>
-    <body>
-    <h1>{hub_cfg.long_label}</h1>
-    <p>This hub uses a faceted composite with one subtrack per dataset x modification.</p>
-    <p>Facets are driven by metadata.tsv and can include modification, tissue, technology, and cell type.</p>
-    <p>The mouseover text displays coverage, frequency, and score for each item.</p>
-    </body>
-    </html>
-    """
-        )
-    )
+    hub_files["description.html"].write(hub_cfg.description.read_text())
     for assembly, rel_path in genomes:
         hub_files["genomes.txt"].write(
             dedent(
@@ -169,3 +167,10 @@ def write_hub_files(
                 """
             )
         )
+
+
+def copy_img(hub_root: Path, hub_cfg: Hub) -> None:
+    """Copy image for description."""
+    if hub_cfg.image is not None:
+        img = hub_cfg.image
+        copyfile(img, Path(hub_root, img.name))
