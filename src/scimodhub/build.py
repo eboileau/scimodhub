@@ -215,13 +215,14 @@ def build_tracks(
     hub_cfg = hub_config_from_dict(config)
     tmp_root = get_tmp_dir(config)
     modomics_file = Path(tmp_root, "modomics.json")
+    modomics = dict()
     if modomics_file.exists():
         try:
             with modomics_file.open("r") as fh:
                 modomics = json.load(fh)
             logger.info(f"Using: {modomics_file.as_posix()} (MODOMICS code).")
         except Exception:
-            modomics = dict()
+            pass
     genomes = []
     for organism in config["genomes"]["include"]:
         try:
