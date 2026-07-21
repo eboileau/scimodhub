@@ -1,5 +1,3 @@
-from pathlib import Path
-
 from scimodhub.bigbed import (
     _write_bed,
     _write_autosql,
@@ -9,7 +7,6 @@ from scimodhub.bigbed import (
 from scimodhub.models import TrackDb, TrackHubConfig, EufRecord
 
 from tests.mocks.io import MockStringIO
-
 
 TRACKDB = TrackDb(
     name="trackDbName",

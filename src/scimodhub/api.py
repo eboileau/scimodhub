@@ -1,6 +1,5 @@
 from urllib.parse import urlparse, urlunparse, urlencode, urljoin
 
-
 GITHUB_REST = "https://api.github.com/repos/"
 SCIMODOM_REST = "https://scimodom.dieterichlab.org/"
 SCIMODOM_ENDPOINTS = {

@@ -2,7 +2,6 @@ from typing import Annotated, Self, Iterable
 from pydantic import BaseModel, Field, EmailStr, model_validator
 from pathlib import Path
 
-
 # metadata
 
 ProjectId = Annotated[str, Field(min_length=8, max_length=8)]

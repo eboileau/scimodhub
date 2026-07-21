@@ -17,7 +17,6 @@ from scimodhub.models import (
     SubtrackSpec,
 )
 
-
 HUB = Hub(
     name="myhub",
     short_label="short",

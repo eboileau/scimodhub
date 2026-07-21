@@ -15,7 +15,6 @@ from scimodhub.fetch import (
 from scimodhub.utils import EmptyDataError
 from tests.mocks.io import MockStringIO
 
-
 CHROM_SIZES = "chr1\t248956422\nchr2\t242193529\n"
 
 METADATA_TBL = """dataset_id\tproject_id\tdataset_title\ttaxa_id\tassembly\trna\tmodomics_sname\ttech\tcto\tbedrmod_path

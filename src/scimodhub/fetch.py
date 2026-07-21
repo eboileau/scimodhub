@@ -17,7 +17,6 @@ from scimodhub.utils import (
     load_metadata,
 )
 
-
 logger = logging.getLogger(__name__)
 
 

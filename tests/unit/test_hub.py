@@ -21,7 +21,6 @@ from scimodhub.models import (
 
 from tests.mocks.io import MockStringIO
 
-
 CONFIG = {
     "hub": {
         "hub": {

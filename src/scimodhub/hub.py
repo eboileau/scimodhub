@@ -145,18 +145,14 @@ def write_hub_files(
     hub_files: dict[str, TextIO], hub_cfg: Hub, genomes: tuple[str, str]
 ) -> None:
     """Write hub files."""
-    hub_files["hub.txt"].write(
-        dedent(
-            f"""\
+    hub_files["hub.txt"].write(dedent(f"""\
     hub {hub_cfg.name}
     shortLabel {hub_cfg.short_label}
     longLabel {hub_cfg.long_label}
     genomesFile genomes.txt
     email {hub_cfg.email}
     descriptionUrl description.html
-    """
-        )
-    )
+    """))
     description = hub_cfg.description.read_text()
     if hub_cfg.public_address is not None and hub_cfg.image is not None:
         img = hub_cfg.image.name
@@ -165,15 +161,11 @@ def write_hub_files(
         )
     hub_files["description.html"].write(description)
     for assembly, rel_path in genomes:
-        hub_files["genomes.txt"].write(
-            dedent(
-                f"""\
+        hub_files["genomes.txt"].write(dedent(f"""\
                 genome {assembly}
                 trackDb {rel_path}/trackDb.txt
 
-                """
-            )
-        )
+                """))
 
 
 def copy_files(hub_root: Path, hub_cfg: Hub, genomes: tuple[str, str]) -> None:

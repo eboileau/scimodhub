@@ -13,7 +13,6 @@ from scimodhub.models import (
     AutoSqlSchema,
 )
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -29,7 +28,9 @@ def _get_as_schema(hub_cfg: TrackHubConfig) -> AutoSqlSchema:
             astype="uint", name="chromEnd", description="Modification end position"
         ),
         AutoSqlField(
-            astype="string", name="name", description="Modification (MODOMICS) short name"
+            astype="string",
+            name="name",
+            description="Modification (MODOMICS) short name",
         ),
         AutoSqlField(
             astype="uint",

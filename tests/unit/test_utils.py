@@ -11,7 +11,6 @@ from scimodhub.utils import (
 )
 from scimodhub.models import MetadataRow, TrackDb, TrackHubConfig
 
-
 METADATA_TBL = """project_id\tdataset_id\tdataset_title\ttaxa_id\trna\tmodomics_sname\ttech\tcto\tbedrmod_path
 WrBiNJCZ\ta7o5Kmjr4Tdp\tHEK293T Trub1-KD\t9606\tWTS\tm6A,Y\tpsi-co-mAFiA\tHEK293T\tpath"""
 
