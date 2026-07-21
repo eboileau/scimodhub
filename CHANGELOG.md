@@ -6,6 +6,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/), and this 
 
 ## [Unreleased]
 
-## [0.0.0]
+## [0.1.0]
 
 Initial version.

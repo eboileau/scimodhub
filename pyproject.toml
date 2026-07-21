@@ -20,9 +20,9 @@ dependencies = [
 "pydantic[email]",
 ]
 
-# [project.urls]
-# Github = "https://github.com/dieterich-lab/scimodom"
-# Issues = "https://github.com/dieterich-lab/scimodom/issues"
+[project.urls]
+Github = "https://github.com/eboileau/scimodhub"
+Issues = "https://github.com/eboileau/scimodhub/issues"
 
 [project.optional-dependencies]
 tests = ["pytest", "pytest-mock", "pytest-datafiles"]
