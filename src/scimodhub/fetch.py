@@ -49,6 +49,7 @@ def _write_metadata(
         [
             "dataset_id",
             "project_id",
+            "dataset_title",
             "taxa_id",
             "assembly",
             "rna",
@@ -97,6 +98,7 @@ def _update_rows(
                 MetadataRow(
                     dataset_id=dataset_id,
                     project_id=row.project_id,
+                    dataset_title=row.dataset_title,
                     taxa_id=row.taxa_id,
                     assembly=row.assembly,
                     rna=row.rna,

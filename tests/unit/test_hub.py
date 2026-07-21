@@ -31,6 +31,7 @@ CONFIG = {
             "email": "email@uni-heidelberg.de",
             "description": "description.html",
             "image": None,
+            "public_address": None,
         },
         "track_db": {
             "name": "trackDbName",
@@ -54,6 +55,12 @@ EXPECTED_TRACKDB = TrackDb(
     long_label="trackDb long label (label)",
 )
 
+EXPECTED_TRACKDB_NO_LABEL = TrackDb(
+    name="trackDbName",
+    short_label="trackDb",
+    long_label="trackDb long label",
+)
+
 EXPECTED_HUB_CONFIG = TrackHubConfig(
     track_db=EXPECTED_TRACKDB,
     score_policy="preserve",
@@ -71,6 +78,7 @@ SUBTRACK_SPEC = SubtrackSpec(
     primary_key="a7o5Kmjr4TdpY",
     subtrack="trackDbName_a7o5Kmjr4TdpY",
     dataset_id="a7o5Kmjr4Tdp",
+    dataset_title="HEK293T Trub1-KD",
     rna="WTS",
     modification="Y",
     tech="psi-co-mAFiA",
@@ -101,7 +109,7 @@ RECORD = (
 SUBTRACKS = [Subtrack(spec=SUBTRACK_SPEC, records=[RECORD])]
 
 EXPECTED_METADATA = """track\t_eufid\tmodification\tcell\ttechnology
-a7o5Kmjr4TdpY\ta7o5Kmjr4Tdp\tY\tHEK293T\tpsi-co-mAFiA
+a7o5Kmjr4TdpY|HEK293T Trub1-KD\ta7o5Kmjr4Tdp\tY\tHEK293T\tpsi-co-mAFiA
 """
 
 EXPECTED_TRACK_HUB = {
@@ -116,6 +124,11 @@ EXPECTED_TRACK_DB = "track trackDbName\nshortLabel trackDb (label)\nlongLabel tr
 def test_track_db_config_from_dict():
     hub_cfg = track_db_config_from_dict(CONFIG, "label")
     assert hub_cfg == EXPECTED_HUB_CONFIG
+
+
+def test_track_db_config_from_dict_no_label():
+    hub_cfg = track_db_config_from_dict(CONFIG, None)
+    assert hub_cfg.track_db == EXPECTED_TRACKDB_NO_LABEL
 
 
 def test_hub_config_from_dict(mocker):
@@ -149,6 +162,25 @@ def test_write_hub_files(mocker):
         write_hub_files(files, EXPECTED_HUB, genomes)
     for k, v in files.items():
         assert v.final_content == EXPECTED_TRACK_HUB[k]
+
+
+def test_write_hub_description(mocker):
+    HUB = EXPECTED_HUB.model_copy()
+    HUB.image = Path("path/to/image.png")
+    HUB.public_address = "https://public/address"
+    mock_read_txt = mocker.patch("pathlib.Path.read_text")
+    mock_read_txt.return_value = (
+        '<a href="address" target="_blank"><img src="image.png" width="250"></img></a>'
+    )
+    genomes = [("hg38", "hsapiens/hg38")]
+    with ExitStack() as stack:
+        files = {
+            f: stack.enter_context(MockStringIO())
+            for f in ["hub.txt", "genomes.txt", "description.html"]
+        }
+        write_hub_files(files, HUB, genomes)
+    expected_desc = '<a href="address" target="_blank"><img src="https://public/address/image.png" width="250"></img></a>'
+    assert files["description.html"].final_content == expected_desc
 
 
 def test_get_mouse_over():

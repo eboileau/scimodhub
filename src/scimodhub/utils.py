@@ -73,6 +73,7 @@ def load_metadata(
                 MetadataRow(
                     dataset_id=str(r["dataset_id"]),
                     project_id=str(r["project_id"]),
+                    dataset_title=str(r["dataset_title"]),
                     taxa_id=int(r["taxa_id"]),
                     assembly=_get_assembly(r),
                     rna=str(r["rna"]),

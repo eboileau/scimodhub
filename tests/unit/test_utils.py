@@ -12,16 +12,17 @@ from scimodhub.utils import (
 from scimodhub.models import MetadataRow, TrackDb, TrackHubConfig
 
 
-METADATA_TBL = """project_id\tdataset_id\ttaxa_id\trna\tmodomics_sname\ttech\tcto\tbedrmod_path
-WrBiNJCZ\ta7o5Kmjr4Tdp\t9606\tWTS\tm6A,Y\tpsi-co-mAFiA\tHEK293T\tpath"""
+METADATA_TBL = """project_id\tdataset_id\tdataset_title\ttaxa_id\trna\tmodomics_sname\ttech\tcto\tbedrmod_path
+WrBiNJCZ\ta7o5Kmjr4Tdp\tHEK293T Trub1-KD\t9606\tWTS\tm6A,Y\tpsi-co-mAFiA\tHEK293T\tpath"""
 
-METADATA_TBL_ASSEMBLY = """project_id\tdataset_id\ttaxa_id\tassembly\trna\tmodomics_sname\ttech\tcto\tbedrmod_path
-WrBiNJCZ\ta7o5Kmjr4Tdp\t9606\tGRCh38\tWTS\tm6A,Y\tpsi-co-mAFiA\tHEK293T\tpath"""
+METADATA_TBL_ASSEMBLY = """project_id\tdataset_id\tdataset_title\ttaxa_id\tassembly\trna\tmodomics_sname\ttech\tcto\tbedrmod_path
+WrBiNJCZ\ta7o5Kmjr4Tdp\tHEK293T Trub1-KD\t9606\tGRCh38\tWTS\tm6A,Y\tpsi-co-mAFiA\tHEK293T\tpath"""
 
 EXPECTED_TBL = [
     MetadataRow(
         dataset_id="a7o5Kmjr4Tdp",
         project_id="WrBiNJCZ",
+        dataset_title="HEK293T Trub1-KD",
         taxa_id=9606,
         assembly="GRCh38",
         rna="WTS",
@@ -33,6 +34,7 @@ EXPECTED_TBL = [
     MetadataRow(
         dataset_id="a7o5Kmjr4Tdp",
         project_id="WrBiNJCZ",
+        dataset_title="HEK293T Trub1-KD",
         taxa_id=9606,
         assembly="GRCh38",
         rna="WTS",

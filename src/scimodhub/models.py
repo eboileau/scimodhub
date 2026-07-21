@@ -14,6 +14,7 @@ class MetadataRow(BaseModel):
 
     dataset_id: DatasetId
     project_id: ProjectId
+    dataset_title: Annotated[str, Field(min_length=1, max_length=255)]
     taxa_id: Annotated[int, Field(gt=0)]
     assembly: Annotated[str, Field(min_length=1, max_length=128)]
     rna: Annotated[str, Field(min_length=1, max_length=32)]
@@ -79,6 +80,7 @@ class Hub(BaseModel):
     email: EmailStr
     description: Path
     image: Path | None = None
+    public_address: str | None = None
 
 
 class TrackDb(BaseModel):
@@ -114,6 +116,7 @@ class SubtrackSpec(BaseModel):
     primary_key: Annotated[str, Field(pattern=r"[a-zA-Z0-9_-]")]
     subtrack: Annotated[str, Field(pattern=r"[a-zA-Z0-9_-]")]
     dataset_id: DatasetId
+    dataset_title: Annotated[str, Field(min_length=1, max_length=255)]
     rna: Annotated[str, Field(min_length=1, max_length=32)]
     modification: Annotated[str, Field(min_length=1, max_length=255)]
     tech: Annotated[str, Field(min_length=1, max_length=255)]

@@ -33,8 +33,9 @@ To build a track hub, **scimodhub** needs a list of bedRmod files and associated
 
 | header | value |
 | :---   | :---  |
-| dataset_id | EUFID or dataset ID |
+|dataset_id | EUFID or dataset ID |
 |project_id| SMID or project ID |
+|dataset_title| Dataset title |
 |taxa_id| NCBI Taxonomic ID |
 |rna| A valid RNA type |
 |tech| Technology |
@@ -63,7 +64,20 @@ If calling `fetch` first, `metadata_table` and `chrom.sizes` do not need to be u
 | :--- | :--- |
 | Ensembl | UCSC |
 
-The content of these files (chromosome and mapping) is not validated.
+**Note:** The content of `chrom.mapping` and `chrom.sizes` is not validated.
+
+The `fetch` call downloads the [MODOMICS](https://www.genesilico.pl/modomics/modifications) codes (via the Sci-ModoM API) and writes them to a file *modomics.json* under `working_dir`
+
+```json
+{
+    "Ar(p)": "2000000000A",
+    "N": "2000000000N",
+    "xX": "2000000000X",
+    ...
+}
+```
+
+The codes are used to build the track names. If this file is not present *e.g.* if `fetch` was not called, the `build` call will build track names using the MODOMICS short names.
 
 The directories given by `working_dir` and `staging_dir` are created on demand and their content is always overwritten. To remove these directories use `clean`.
 
@@ -79,7 +93,7 @@ A lot of existing short-read data are just not *quantitative* enough to be inclu
 
 As Sci-ModoM is preparing to move from EUF version 1.8 to 2, *ad hoc* or missing scores will be replaced by their corresponding site coverage. While this duplicates data, this does not generally lead to loss of information. To build a track hub using the data from the current version of Sci-ModoM (v4.0.2, EUF specs v1.8), but consistently with the latest EUF specs v2 (with the limitation that valid coverage is replaced by coverage, as explained above), use `score_policy: coverage`.
 
-Note that a bedRMod file with score values outside the range [0, 1000] may not only fail from being correctly displayed (*cf.* [bedtools definition of score](https://bedtools.readthedocs.io/en/latest/content/general-usage.html?highlight=bed%20format)), it will also fail to convert to bigBed! For this reason, score-based shading and filtering is disabled, and score is set to zero. The 'original' score value is stored in a additional 12th field, which is used *e.g.* for display.
+Note that a bedRMod file with score values outside the range [0, 1000] may not only fail from being correctly displayed (*cf.* [bedtools definition of score](https://bedtools.readthedocs.io/en/latest/content/general-usage.html?highlight=bed%20format)), it will also fail to convert to bigBed! For this reason, score-based shading and filtering is disabled, and score is set to zero. The 'original' score value is stored in an additional 12th field, which is used *e.g.* for display.
 
 ### Commands
 
@@ -110,7 +124,7 @@ scimodhub --config data/examples/config.yaml clean
 
 ### Troubleshooting
 
-The TrackDb shortLabel is limited to 17 printable characters. This label is a composite of two values given in the configuration file. If this fail with `pydantic_core._pydantic_core.ValidationError ... short_label ... String should have at most 17 characters`, change values in the configuration file.
+The TrackDb shortLabel is limited to 17 printable characters. This label is a composite of two values given in the configuration file, unless the organism label is `null`. If this fail with `pydantic_core._pydantic_core.ValidationError ... short_label ... String should have at most 17 characters`, change values in the configuration file.
 
 ## Development notes
 
@@ -165,8 +179,6 @@ bed files (1.8), we have to allow score = 0, see also [Update bedRMod specs #167
 * Do we need all three `noScoreFilter on`, `useScore 0` (deprecated?), `spectrum off`...?
 
 * Use bedmethyl default with missing fields?
-
-* Add for each track `nameOfTrack.html` in the same directory as the trackDb matching the name of the track (html file does not need to be declared), see [TrackSettings](https://genome.ucsc.edu/goldenpath/help/trackDb/trackDbHub.html#bigBed_-_Item_or_Region_Track_Settings) and [templatePage](https://genome.ucsc.edu/goldenpath/help/examples/hubExamples/templatePage.html).
 
 * Do we need `tableBrowser on` ?
 

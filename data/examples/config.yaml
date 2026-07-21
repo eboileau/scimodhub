@@ -15,7 +15,7 @@ euf_compatible_versions:
 # chrom.mapping: path to a tsv with chrom mapping from Ensembl to UCSC.
 # chrom.sizes: chrom sizes - null if fetching data from Sci-ModoM.
 # If chrom.sizes is given, it must follow the UCSC specs.
-# label: this is added to the track labels.
+# label: this is added to the track labels if not null.
 genomes:
   h_sapiens:
     taxa_id: 9606
@@ -24,7 +24,7 @@ genomes:
     chrom:
       mapping: data/GRCh38_ensembl2UCSC.tsv
       sizes: local/hg38.chrom.sizes # null
-    label: "human"
+    label: "human" # null
   m_musculus:
     taxa_id: 10090
     assembly:
@@ -32,7 +32,7 @@ genomes:
     chrom:
       mapping: data/GRCm39_ensembl2UCSC.tsv
       sizes: local/mm39.chrom.sizes #null
-    label: "mouse"
+    label: "mouse" # null
   include:
     - h_sapiens
     - m_musculus
@@ -46,11 +46,15 @@ hub:
     # Maximum length is 80 characters. Displayed in the description field.
     long_label: "Sci-ModoM Track Hub"
     email: "boileau@uni-heidelberg.de"
-    # Required: file to use for hub description - content must be valid html
+    # Required: file to use for hub description - content must be valid html.
     description: docs/source/SciModHub.html
-    # Image file for description - null if unused
-    # The image name must match that used in description
-    image: docs/source/_static/logo_hub.png
+    # Image file for description - null if unused.
+    # The image name must match that used in description.
+    image: docs/source/_static/logo_hub.png # null
+    # A public address to replace the relative image path with an absolute path - null if unused.
+    # This is to avoid the browser looking for the image on the UCSC server when the page is loaded.
+    # NOTE: this is a string, not a URL; quote the address. If image is null this is ignored.
+    public_address: "https://trackhub.dieterichlab.org/eboileau/SciModHub" # null
   track_db:
     # The composite's track name (parent). Each subtrack name is <parentTrackName>_<primaryKeyValue>.
     # <primaryKeyValue> is derived from the metadata and used for faceting.

@@ -45,10 +45,11 @@ def hub_config_from_dict(config: dict) -> TrackHubConfig:
         email=hub_cfg["hub"]["email"],
         description=Path(desc_file),
         image=img,
+        public_address=hub_cfg["hub"]["public_address"],
     )
 
 
-def track_db_config_from_dict(config: dict, label: str) -> TrackHubConfig:
+def track_db_config_from_dict(config: dict, label: str | None) -> TrackHubConfig:
     """Define hub configuration (trackDb) with defaults."""
     hub_cfg = config["hub"]
     display_cfg = config.get("display", {})
@@ -56,8 +57,8 @@ def track_db_config_from_dict(config: dict, label: str) -> TrackHubConfig:
     long_label = hub_cfg["track_db"]["long_label"]
     track_db = TrackDb(
         name=hub_cfg["track_db"]["name"],
-        short_label=f"{short_label} ({label})",
-        long_label=f"{long_label} ({label})",
+        short_label=f"{short_label} ({label})" if label else f"{short_label}",
+        long_label=f"{long_label} ({label})" if label else f"{long_label}",
     )
     return TrackHubConfig(
         track_db=track_db,
@@ -81,7 +82,7 @@ def write_metadata(handle: TextIO, subtracks: list[Subtrack]) -> None:
     """Write metadata.tsv."""
     rows = [
         {
-            "track": p.spec.primary_key,
+            "track": f"{p.spec.primary_key}|{p.spec.dataset_title}",
             "_eufid": p.spec.dataset_id,
             "modification": p.spec.modification,
             "cell": p.spec.cto,
@@ -156,7 +157,13 @@ def write_hub_files(
     """
         )
     )
-    hub_files["description.html"].write(hub_cfg.description.read_text())
+    description = hub_cfg.description.read_text()
+    if hub_cfg.public_address is not None and hub_cfg.image is not None:
+        img = hub_cfg.image.name
+        description = description.replace(
+            f'<img src="{img}"', f'<img src="{hub_cfg.public_address}/{img}"'
+        )
+    hub_files["description.html"].write(description)
     for assembly, rel_path in genomes:
         hub_files["genomes.txt"].write(
             dedent(
@@ -169,8 +176,17 @@ def write_hub_files(
         )
 
 
-def copy_img(hub_root: Path, hub_cfg: Hub) -> None:
-    """Copy image for description."""
+def copy_files(hub_root: Path, hub_cfg: Hub, genomes: tuple[str, str]) -> None:
+    """Copy files and images."""
+    for _, rel_str in genomes:
+        # TODO: we need the composite's track name...
+        rel_path = Path(hub_root, rel_str)
+        track_db = Path(rel_path, "trackDb.txt")
+        name = track_db.read_text().splitlines()[0].partition("track")[2].strip()
+        copyfile(
+            Path(hub_root, "description.html"),
+            Path(rel_path, f"{name}.html"),
+        )
     if hub_cfg.image is not None:
         img = hub_cfg.image
         copyfile(img, Path(hub_root, img.name))

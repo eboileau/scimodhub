@@ -18,8 +18,8 @@ from tests.mocks.io import MockStringIO
 
 CHROM_SIZES = "chr1\t248956422\nchr2\t242193529\n"
 
-METADATA_TBL = """dataset_id\tproject_id\ttaxa_id\tassembly\trna\tmodomics_sname\ttech\tcto\tbedrmod_path
-3XXcptjDwfaK\t49mrpvBp\t9606\tGRCh38\tWTS\tm5C,Y\tm5C-TAC-seq\tHEK293T\tpath
+METADATA_TBL = """dataset_id\tproject_id\tdataset_title\ttaxa_id\tassembly\trna\tmodomics_sname\ttech\tcto\tbedrmod_path
+3XXcptjDwfaK\t49mrpvBp\tHEK293T unknown dependence (high-threshold cutoff) 2\t9606\tGRCh38\tWTS\tm5C,Y\tm5C-TAC-seq\tHEK293T\tpath
 """
 
 MODOMICS = {"po2yW": "2034832551G", "nm5U": "2000000510C"}
@@ -28,6 +28,7 @@ TBL = [
     MetadataRow(
         dataset_id="3XXcptjDwfaK",
         project_id="49mrpvBp",
+        dataset_title="HEK293T unknown dependence (high-threshold cutoff) 2",
         taxa_id=9606,
         assembly="GRCh38",
         rna="WTS",
@@ -39,6 +40,7 @@ TBL = [
     MetadataRow(
         dataset_id="3XXcptjDwfaK",
         project_id="49mrpvBp",
+        dataset_title="HEK293T unknown dependence (high-threshold cutoff) 2",
         taxa_id=9606,
         assembly="GRCh38",
         rna="WTS",
@@ -84,6 +86,7 @@ def test_write_metadata(mocker):
         {
             "cto": "HEK293T",
             "dataset_id": "3XXcptjDwfaK",
+            "dataset_title": "HEK293T unknown dependence (high-threshold cutoff) 2",
             "modomics_sname": "m5C,Y",
             "pmid": "39002544",
             "project_id": "49mrpvBp",
@@ -95,6 +98,7 @@ def test_write_metadata(mocker):
         {
             "cto": "mESC",
             "dataset_id": "4Pw4rPAuDNwd",
+            "dataset_title": "mESC unknown dependence (high-threshold cutoff) 2",
             "modomics_sname": "m5C",
             "pmid": "39002544",
             "project_id": "49mrpvBp",

@@ -28,7 +28,7 @@ from scimodhub.hub import (
     write_metadata,
     write_trackdb,
     write_hub_files,
-    copy_img,
+    copy_files,
 )
 from scimodhub.bedrmod import EufImporter
 from scimodhub.bigbed import build_subtrack
@@ -84,6 +84,7 @@ def _add_subtrack_spec(
         primary_key=tid,
         subtrack=f"{hub_cfg.track_db.name}_{tid}",
         dataset_id=row.dataset_id,
+        dataset_title=row.dataset_title,
         rna=row.rna,
         modification=modification,
         tech=row.tech,
@@ -248,4 +249,4 @@ def build_tracks(
                 )
             }
             write_hub_files(files, hub_cfg, genomes)
-        copy_img(hub_root, hub_cfg)
+        copy_files(hub_root, hub_cfg, genomes)
