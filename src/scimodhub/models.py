@@ -1,6 +1,24 @@
 from typing import Annotated, Self, Iterable
+from datetime import date
 from pydantic import BaseModel, Field, EmailStr, model_validator
 from pathlib import Path
+
+# defaults
+
+FilterSettings = {
+    "frequency": (
+        "filter.frequency 0\n"
+        "filterByRange.frequency on\n"
+        "filterLimits.frequency 0:100\n"
+        "filterLabel.frequency Frequency (percent modified)"
+    ),
+    "coverage": (
+        "filter.coverage 0\n"
+        "filterLimits.coverage 0:400000\n"
+        "filterLabel.coverage Minimum coverage"
+    ),
+}
+
 
 # metadata
 
@@ -103,8 +121,9 @@ class TrackHubConfig(BaseModel):
     max_check_boxes: int
     hide_empty: bool
     center_labels: bool
-    all_button_pair: bool
-    drag_and_drop: bool
+    default_sort_field: str
+    filters: list[str] | None = None
+    toggle_on: dict[str, list[str]] | None = None
     rgb_min: tuple[int, int, int]
     rgb_max: tuple[int, int, int]
 
@@ -114,6 +133,7 @@ class SubtrackSpec(BaseModel):
 
     primary_key: Annotated[str, Field(pattern=r"[a-zA-Z0-9_-]")]
     subtrack: Annotated[str, Field(pattern=r"[a-zA-Z0-9_-]")]
+    toggle_on: str = "off"
     dataset_id: DatasetId
     dataset_title: Annotated[str, Field(min_length=1, max_length=255)]
     rna: Annotated[str, Field(min_length=1, max_length=32)]
@@ -144,6 +164,8 @@ class TrackDbTrack(BaseModel):
     name: Annotated[
         str, Field(pattern=r"[a-zA-Z0-9_-]")
     ]  # Name of the dataset (unique).
+    parent: Annotated[str, Field(pattern=r"[a-zA-Z0-9_-]")]
+    toggle_on: str = "off"
     short_label: Annotated[
         str, Field(min_length=1, max_length=17, pattern=r"[a-zA-Z0-9 ]")
     ]
@@ -151,36 +173,25 @@ class TrackDbTrack(BaseModel):
         str, Field(min_length=1, max_length=76, pattern=r"[a-zA-Z0-9 ]")
     ]
     big_data_url: str  # Full URL or relative to trackDb.
-    parent: Annotated[str, Field(pattern=r"[a-zA-Z0-9_-]")]
-    mouse_over: str = (
-        "$name | score: $score | coverage: $coverage | percent modified: $frequency"
-    )
-    track_type: str = "bigBed 9+2"
-    item_rgb: str = "on"  # Activate item coloring using itemRgb.
-    use_score: int = 0  # Turn off score-based shading and filtering.
-    no_score_filter: str = "on"
-    spectrum: str = "off"
+    url: str
+    url_label: str
 
     def render(self) -> str:
         lines = [
             f"track {self.name}",
-            f"type {self.track_type}",
-            f"parent {self.parent} off",
-            f"bigDataUrl {self.big_data_url}",
+            f"parent {self.parent} {self.toggle_on}",
             f"shortLabel {self.short_label}",
             f"longLabel {self.long_label}",
-            f"mouseOver {self.mouse_over}",
-            f"itemRgb {self.item_rgb}",
-            f"useScore {self.use_score}",
-            f"noScoreFilter {self.no_score_filter}",
-            f"spectrum {self.spectrum}",
+            f"bigDataUrl {self.big_data_url}",
+            f"url {self.url}",
+            f"urlLabel {self.url_label}",
             "",
         ]
         return "\n".join(lines)
 
 
 class FacetedComposite(BaseModel):
-    """TrackDb (faceted composite)."""
+    """TrackDb (faceted composite container)."""
 
     name: Annotated[str, Field(pattern=r"[a-zA-Z0-9]")]
     short_label: Annotated[
@@ -190,16 +201,20 @@ class FacetedComposite(BaseModel):
         str, Field(min_length=1, max_length=76, pattern=r"[a-zA-Z0-9 ]")
     ]
     track_type: str = "bigBed 9+2"
+    mode: str = "faceted"
+    visibility: str = "pack"
     meta_data_url: str  # The tsv file with facet information.
     primary_key: Annotated[
         str, Field(pattern=r"[a-zA-Z0-9_-]")
     ]  # Works in tandem with the metaDataUrl setting.
-    mode: str = "faceted"
     max_check_boxes: int
-    all_button_pair: bool = True
+    default_sort_field: str
     center_labels: bool = True
-    drag_and_drop: bool = True
     hide_empty: bool = True
+    date: date
+    item_rgb: str = "on"  # Activate item coloring using itemRgb.
+    mouse_over: str
+    filters: list[str] | None
     tracks: tuple[TrackDbTrack, ...]
 
     def render(self) -> str:
@@ -208,21 +223,25 @@ class FacetedComposite(BaseModel):
             f"shortLabel {self.short_label}",
             f"longLabel {self.long_label}",
             f"type {self.track_type}",
-            f"metaDataUrl {self.meta_data_url}",
-            "subtrackUrls _eufid=https://scimodom.dieterichlab.org/browse/$$",
-            f"primaryKey {self.primary_key}",
-            # "compositeTrack on",
             f"compositeTrack {self.mode}",
-            f"maxCheckBoxes {self.max_check_boxes}",
+            f"visibility {self.visibility}",
+            f"html {self.name}",
+            f"metaDataUrl {self.meta_data_url}",
+            f"primaryKey {self.primary_key}",
+            "subtrackUrls _eufid=https://scimodom.dieterichlab.org/browse/$$",
+            f"defaultSortField {self.default_sort_field}",
+            f"dataVersion Sci-ModoM, files dated {self.date}",
+            f"itemRgb {self.item_rgb}",
+            f"mouseOver {self.mouse_over}",
+            f"maxCheckboxes {self.max_check_boxes}",
         ]
-        if self.all_button_pair:
-            lines.append("allButtonPair on")
         if self.center_labels:
             lines.append("centerLabelsDense on")
-        if self.drag_and_drop:
-            lines.append("dragAndDrop subTracks")
         if self.hide_empty:
             lines.append("hideEmptySubtracks on")
+        if self.filters:
+            for filter in self.filters:
+                lines.append(FilterSettings[filter])
         lines.append("")
         for tr in self.tracks:
             lines.append(tr.render().rstrip())

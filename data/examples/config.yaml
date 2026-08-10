@@ -76,8 +76,27 @@ hub:
   max_check_boxes: 20
   hide_empty_subtracks: true
   center_labels_dense: true
-  all_button_pair: true
-  drag_and_drop_subtracks: true
+  default_sort_field: modification
+  # Filter settings: default to frequency and/or coverage.
+  # Comment items to toggle off.
+  filters:
+    - frequency
+    - coverage
+  # Turn on default tracks (parent on).
+  # Specify EUFID and modification(s) (short name).
+  # Comment items to toggle off.
+  toggle_on:
+    jaSvBXBkn3xs:
+      - Am
+      - Cm
+      - Gm
+      - Um
+    aEKnhD757Qa8:
+      - Y
+    4Hod8ruppnD2:
+      - m5C
+    msuJfBpJvM5H:
+      - m6A
 
 # Defines the itemRgb color palette using the "frequency".
 display:

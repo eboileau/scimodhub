@@ -67,8 +67,7 @@ EXPECTED_HUB_CONFIG = TrackHubConfig(
     max_check_boxes=20,
     hide_empty=True,
     center_labels=True,
-    all_button_pair=True,
-    drag_and_drop=True,
+    default_sort_field="modification",
     rgb_min=(0, 0, 255),
     rgb_max=(255, 0, 0),
 )
@@ -107,7 +106,7 @@ RECORD = (
 
 SUBTRACKS = [Subtrack(spec=SUBTRACK_SPEC, records=[RECORD])]
 
-EXPECTED_METADATA = """track\t_eufid\tmodification\tcell\ttechnology
+EXPECTED_METADATA = """dataset\t_eufid\tmodification\tbiosample\ttechnology
 a7o5Kmjr4TdpY|HEK293T Trub1-KD\ta7o5Kmjr4Tdp\tY\tHEK293T\tpsi-co-mAFiA
 """
 
@@ -117,7 +116,10 @@ EXPECTED_TRACK_HUB = {
     "description.html": "html description",
 }
 
-EXPECTED_TRACK_DB = "track trackDbName\nshortLabel trackDb (label)\nlongLabel trackDb long label (label)\ntype bigBed 9 + 2\nmetaDataUrl metadata.tsv\nsubtrackUrls _eufid=https://scimodom.dieterichlab.org/browse/$$\nprimaryKey track\ncompositeTrack faceted\nmaxCheckBoxes 20\nallButtonPair on\ncenterLabelsDense on\ndragAndDrop subTracks\nhideEmptySubtracks on\n\ntrack trackDbName_a7o5Kmjr4TdpY\ntype bigBed 9 + 2\nparent trackDbName off\nbigDataUrl a7o5Kmjr4TdpY.bb\nshortLabel Y\nlongLabel EUFID:a7o5Kmjr4Tdp | Y HEK293T psi-co-mAFiA\nmouseOver $name | score: $score | coverage: $coverage | percent modified: $frequency\nitemRgb on\nuseScore 0\nnoScoreFilter on\nspectrum off\n"
+EXPECTED_TRACK_DB = "track trackDbName\nshortLabel trackDb (label)\nlongLabel trackDb long label (label)\ntype bigBed 9 + 2\ncompositeTrack faceted\nvisibility pack\nhtml trackDbName\nmetaDataUrl metadata.tsv\nprimaryKey dataset\nsubtrackUrls _eufid=https://scimodom.dieterichlab.org/browse/$$\ndefaultSortField modification\ndataVersion Sci-ModoM, files dated 2026-08-11\nitemRgb on\nmouseOver $name at $chrom:${chromStart} | score: $score | coverage: $coverage | percent modified: $frequency\nmaxCheckboxes 20\ncenterLabelsDense on\nhideEmptySubtracks on\n\ntrack trackDbName_a7o5Kmjr4TdpY\nparent trackDbName off\nshortLabel Y\nlongLabel EUFID:a7o5Kmjr4Tdp | Y HEK293T psi-co-mAFiA\nbigDataUrl a7o5Kmjr4TdpY.bb\nurl https://scimodom.dieterichlab.org/browse/a7o5Kmjr4Tdp\nurlLabel Sci-ModoM dataset record (a7o5Kmjr4Tdp)\n"
+
+
+EXPECTED_TRACK_DB_WITH_OPTIONS = "track trackDbName\nshortLabel trackDb (label)\nlongLabel trackDb long label (label)\ntype bigBed 9 + 2\ncompositeTrack faceted\nvisibility pack\nhtml trackDbName\nmetaDataUrl metadata.tsv\nprimaryKey dataset\nsubtrackUrls _eufid=https://scimodom.dieterichlab.org/browse/$$\ndefaultSortField modification\ndataVersion Sci-ModoM, files dated 2026-08-11\nitemRgb on\nmouseOver $name at $chrom:${chromStart} | score: $score | coverage: $coverage | percent modified: $frequency\nmaxCheckboxes 20\ncenterLabelsDense on\nhideEmptySubtracks on\nfilter.frequency 0\nfilterByRange.frequency on\nfilterLimits.frequency 0:100\nfilterLabel.frequency Frequency (percent modified)\nfilter.coverage 0\nfilterLimits.coverage 0:400000\nfilterLabel.coverage Minimum coverage\n\ntrack trackDbName_a7o5Kmjr4TdpY\nparent trackDbName off\nshortLabel Y\nlongLabel EUFID:a7o5Kmjr4Tdp | Y HEK293T psi-co-mAFiA\nbigDataUrl a7o5Kmjr4TdpY.bb\nurl https://scimodom.dieterichlab.org/browse/a7o5Kmjr4Tdp\nurlLabel Sci-ModoM dataset record (a7o5Kmjr4Tdp)\n"
 
 
 def test_track_db_config_from_dict():
@@ -143,10 +145,20 @@ def test_write_metadata():
     assert fh.final_content == EXPECTED_METADATA
 
 
-def test_write_trackdb():
+def test_write_trackdb(freezer):
+    freezer.move_to("2026-08-11")
     with MockStringIO() as fh:
         write_trackdb(fh, SUBTRACKS, EXPECTED_HUB_CONFIG)
     assert fh.final_content == EXPECTED_TRACK_DB
+
+
+def test_write_trackdb_with_options(freezer):
+    freezer.move_to("2026-08-11")
+    HUB_CONFIG = EXPECTED_HUB_CONFIG.model_copy()
+    HUB_CONFIG.filters = ["frequency", "coverage"]
+    with MockStringIO() as fh:
+        write_trackdb(fh, SUBTRACKS, HUB_CONFIG)
+    assert fh.final_content == EXPECTED_TRACK_DB_WITH_OPTIONS
 
 
 def test_write_hub_files(mocker):
@@ -185,24 +197,26 @@ def test_write_hub_description(mocker):
 def test_get_mouse_over():
     mouse_over = _get_mouse_over(EXPECTED_HUB_CONFIG)
     assert mouse_over == (
-        "$name | score: $score | coverage: $coverage | percent modified: $frequency"
+        "$name at $chrom:${chromStart} | score: $score | coverage: $coverage | percent modified: $frequency"
     )
 
     hub_cfg = EXPECTED_HUB_CONFIG.model_copy()
     hub_cfg.score_policy = "zero"
     mouse_over = _get_mouse_over(hub_cfg)
     assert mouse_over == (
-        "$name | score: $rawScore | "
+        "$name at $chrom:${chromStart} | score: $rawScore | "
         "coverage: $coverage | percent modified: $frequency"
     )
 
     hub_cfg.score_policy = "coverage"
     mouse_over = _get_mouse_over(hub_cfg)
     assert mouse_over == (
-        "$name | score: $rawScore | "
+        "$name at $chrom:${chromStart} | score: $rawScore | "
         "coverage: $coverage | percent modified: $frequency"
     )
 
     hub_cfg.score_display = False
     mouse_over = _get_mouse_over(hub_cfg)
-    assert mouse_over == ("$name | coverage: $coverage | percent modified: $frequency")
+    assert mouse_over == (
+        "$name at $chrom:${chromStart} | coverage: $coverage | percent modified: $frequency"
+    )

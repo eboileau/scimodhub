@@ -71,6 +71,7 @@ def _validate_header(
 
 def _add_subtrack_spec(
     row: MetadataRow,
+    short_labels: list[str],
     hub_cfg: TrackHubConfig,
     modification: str,
     modomics: dict[str, str],
@@ -80,17 +81,28 @@ def _add_subtrack_spec(
 ) -> SubtrackSpec:
     sub = modomics[modification] if modomics else modification
     tid = f"{row.dataset_id}{sub}"
+    toggle_on = "off"
+    if hub_cfg.toggle_on and row.dataset_id in hub_cfg.toggle_on:
+        if modification in hub_cfg.toggle_on[row.dataset_id]:
+            toggle_on = "on"
+    short_label = f"{modification} {row.cto}"
+    count = 1
+    label = short_label
+    while label in short_labels:
+        label = f"{short_label} {count}"
+        count += 1
     return SubtrackSpec(
         primary_key=tid,
         subtrack=f"{hub_cfg.track_db.name}_{tid}",
+        toggle_on=toggle_on,
         dataset_id=row.dataset_id,
         dataset_title=row.dataset_title,
         rna=row.rna,
         modification=modification,
         tech=row.tech,
         cto=row.cto,
-        short_label=f"{modification}",
-        long_label=f"{row.cto} {row.tech}",
+        short_label=label,
+        long_label=f"{modification} {row.tech}: {row.dataset_title}",
         hub_root=hub_root,
         hub_dir=hub_dir,
         tmp_dir=tmp_dir,
@@ -107,6 +119,7 @@ def _prepare_subtracks(
     tmp_dir: Path,
 ) -> list[Subtrack]:
     subtracks: list[Subtrack] = []
+    short_labels: list[str] = []
     for row in rows:
         try:
             with open(row.bedrmod_path) as fp:
@@ -116,8 +129,16 @@ def _prepare_subtracks(
                 # parse records - "split" by modification for faceting
                 for modification in row.modomics_sname.split(","):
                     spec = _add_subtrack_spec(
-                        row, hub_cfg, modification, modomics, hub_root, hub_dir, tmp_dir
+                        row,
+                        short_labels,
+                        hub_cfg,
+                        modification,
+                        modomics,
+                        hub_root,
+                        hub_dir,
+                        tmp_dir,
                     )
+                    short_labels.append(spec.short_label)
                     subtracks.append(
                         Subtrack(spec=spec, records=_get_records(records, modification))
                     )

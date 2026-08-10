@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import TextIO
 from textwrap import dedent
 from shutil import copyfile
+from datetime import date
 
 import pandas as pd
 
@@ -20,7 +21,7 @@ def _get_mouse_over(hub_cfg: TrackHubConfig) -> str:
     score_str = "score"
     if hub_cfg.score_policy.lower() in ["zero", "coverage"]:
         score_str = "rawScore"
-    mouse_over = "$name | "
+    mouse_over = "$name at $chrom:${chromStart} | "
     if hub_cfg.score_display:
         mouse_over += f"score: ${score_str} | "
     mouse_over += "coverage: $coverage | percent modified: $frequency"
@@ -67,8 +68,9 @@ def track_db_config_from_dict(config: dict, label: str | None) -> TrackHubConfig
         max_check_boxes=int(hub_cfg.get("max_check_boxes", 20)),
         hide_empty=bool(hub_cfg.get("hide_empty_subtracks", True)),
         center_labels=bool(hub_cfg.get("center_labels_dense", True)),
-        all_button_pair=bool(hub_cfg.get("all_button_pair", True)),
-        drag_and_drop=bool(hub_cfg.get("drag_and_drop_subtracks", True)),
+        default_sort_field=hub_cfg.get("default_sort_field", "modification"),
+        filters=hub_cfg.get("filters", None),
+        toggle_on=hub_cfg.get("toggle_on", None),
         rgb_min=tuple(
             int(x) for x in display_cfg.get("frequency_color_min", "0,0,255").split(",")
         ),
@@ -82,10 +84,10 @@ def write_metadata(handle: TextIO, subtracks: list[Subtrack]) -> None:
     """Write metadata.tsv."""
     rows = [
         {
-            "track": f"{p.spec.primary_key}|{p.spec.dataset_title}",
+            "dataset": f"{p.spec.primary_key}|{p.spec.dataset_title}",
             "_eufid": p.spec.dataset_id,
             "modification": p.spec.modification,
-            "cell": p.spec.cto,
+            "biosample": p.spec.cto,
             "technology": p.spec.tech,
         }
         for p in subtracks
@@ -115,12 +117,13 @@ def write_trackdb(
         tracks.append(
             TrackDbTrack(
                 name=spec.subtrack,
+                parent=hub_cfg.track_db.name,
+                toggle_on=spec.toggle_on,
                 short_label=spec.short_label,
                 long_label=spec.long_label,
                 big_data_url=bb_path.relative_to(hub_dir).as_posix(),
-                parent=hub_cfg.track_db.name,
-                track_type=f"bigBed {get_type(hub_cfg)}",
-                mouse_over=_get_mouse_over(hub_cfg),
+                url=f"https://scimodom.dieterichlab.org/browse/{spec.dataset_id}",
+                url_label=f"Sci-ModoM dataset record ({spec.dataset_id})",
             )
         )
 
@@ -130,13 +133,15 @@ def write_trackdb(
         long_label=hub_cfg.track_db.long_label,
         track_type=f"bigBed {get_type(hub_cfg)}",
         meta_data_url="metadata.tsv",
-        primary_key="track",
+        primary_key="dataset",
         max_check_boxes=hub_cfg.max_check_boxes,
-        tracks=tuple(tracks),
-        all_button_pair=hub_cfg.all_button_pair,
+        default_sort_field=hub_cfg.default_sort_field,
         center_labels=hub_cfg.center_labels,
-        drag_and_drop=hub_cfg.drag_and_drop,
         hide_empty=hub_cfg.hide_empty,
+        date=date.today(),
+        mouse_over=_get_mouse_over(hub_cfg),
+        filters=hub_cfg.filters,
+        tracks=tuple(tracks),
     )
     handle.write(composite.render())
 

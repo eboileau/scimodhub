@@ -39,8 +39,7 @@ HUB_CONFIG = TrackHubConfig(
     max_check_boxes=20,
     hide_empty=True,
     center_labels=True,
-    all_button_pair=True,
-    drag_and_drop=True,
+    default_sort_field="modification",
     rgb_min=(0, 0, 255),
     rgb_max=(255, 0, 0),
 )
@@ -69,8 +68,8 @@ EXPECTED_SUBTRACK_SPEC = SubtrackSpec(
     modification="Y",
     tech="psi-co-mAFiA",
     cto="HEK293T",
-    short_label="Y",
-    long_label="HEK293T psi-co-mAFiA",
+    short_label="Y HEK293T",
+    long_label="Y psi-co-mAFiA: HEK293T Trub1-KD",
     hub_root=Path("staging/myHub"),
     hub_dir=Path("staging/myHub/hsapiens/hg38"),
     tmp_dir=Path("work/hsapiens/hg38"),
@@ -86,8 +85,8 @@ EXPECTED_SUBTRACK_SPEC_MODOMICS = SubtrackSpec(
     modification="Y",
     tech="psi-co-mAFiA",
     cto="HEK293T",
-    short_label="Y",
-    long_label="HEK293T psi-co-mAFiA",
+    short_label="Y HEK293T",
+    long_label="Y psi-co-mAFiA: HEK293T Trub1-KD",
     hub_root=Path("staging/myHub"),
     hub_dir=Path("staging/myHub/hsapiens/hg38"),
     tmp_dir=Path("work/hsapiens/hg38"),
@@ -164,6 +163,7 @@ def test_validate_header():
 def test_add_subtrack_spec():
     spec = _add_subtrack_spec(
         METADATA_ROW,
+        [],
         HUB_CONFIG,
         "Y",
         {},
@@ -175,6 +175,21 @@ def test_add_subtrack_spec():
 
     spec = _add_subtrack_spec(
         METADATA_ROW,
+        ["Y HEK293T", "Y HEK293T 1"],
+        HUB_CONFIG,
+        "Y",
+        {},
+        Path("staging", "myHub"),
+        Path("staging", "myHub", "hsapiens", "hg38"),
+        Path("work", "hsapiens", "hg38"),
+    )
+    EXPECTED_SUBTRACK_SPEC_COPY = EXPECTED_SUBTRACK_SPEC.model_copy()
+    EXPECTED_SUBTRACK_SPEC_COPY.short_label = "Y HEK293T 2"
+    assert spec == EXPECTED_SUBTRACK_SPEC_COPY
+
+    spec = _add_subtrack_spec(
+        METADATA_ROW,
+        [],
         HUB_CONFIG,
         "Y",
         {"Y": "2000000009U"},
@@ -183,3 +198,19 @@ def test_add_subtrack_spec():
         Path("work", "hsapiens", "hg38"),
     )
     assert spec == EXPECTED_SUBTRACK_SPEC_MODOMICS
+
+    HUB_CONFIG_COPY = HUB_CONFIG.model_copy()
+    HUB_CONFIG_COPY.toggle_on = {"a7o5Kmjr4Tdp": ["Y"]}
+    EXPECTED_SUBTRACK_SPEC_COPY = EXPECTED_SUBTRACK_SPEC_MODOMICS.model_copy()
+    EXPECTED_SUBTRACK_SPEC_COPY.toggle_on = "on"
+    spec = _add_subtrack_spec(
+        METADATA_ROW,
+        [],
+        HUB_CONFIG_COPY,
+        "Y",
+        {"Y": "2000000009U"},
+        Path("staging", "myHub"),
+        Path("staging", "myHub", "hsapiens", "hg38"),
+        Path("work", "hsapiens", "hg38"),
+    )
+    assert spec == EXPECTED_SUBTRACK_SPEC_COPY

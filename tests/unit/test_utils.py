@@ -75,8 +75,7 @@ HUB_CONFIG = TrackHubConfig(
     max_check_boxes=20,
     hide_empty=True,
     center_labels=True,
-    all_button_pair=True,
-    drag_and_drop=True,
+    default_sort_field="modification",
     rgb_min=(0, 0, 255),
     rgb_max=(255, 0, 0),
 )

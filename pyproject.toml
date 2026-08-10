@@ -25,7 +25,7 @@ Github = "https://github.com/eboileau/scimodhub"
 Issues = "https://github.com/eboileau/scimodhub/issues"
 
 [project.optional-dependencies]
-tests = ["pytest", "pytest-mock", "pytest-datafiles"]
+tests = ["pytest", "pytest-mock", "pytest-datafiles", "pytest-freezer"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

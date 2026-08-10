@@ -21,8 +21,7 @@ HUB_CONFIG = TrackHubConfig(
     max_check_boxes=20,
     hide_empty=True,
     center_labels=True,
-    all_button_pair=True,
-    drag_and_drop=True,
+    default_sort_field="modification",
     rgb_min=(0, 0, 255),
     rgb_max=(255, 0, 0),
 )
@@ -75,11 +74,11 @@ string\tchrom;\t"Chromosome"
 uint\tchromStart;\t"Modification start position"
 uint\tchromEnd;\t"Modification end position"
 string\tname;\t"Modification (MODOMICS) short name"
-uint\tscore;\t"off"
+uint\tscore;\t"Not used"
 char[1]\tstrand;\t"Strand"
 uint\tthickStart;\t"Thick start"
 uint\tthickEnd;\t"Thick end"
-uint\treserved;\t"Blue (0) to red (100) percent modified"
+uint\treserved;\t"Item color, blue (low) to red (100) percent modified"
 uint\tcoverage;\t"Coverage"
 float\tfrequency;\t"Percent modified"
 )
@@ -92,14 +91,14 @@ string\tchrom;\t"Chromosome"
 uint\tchromStart;\t"Modification start position"
 uint\tchromEnd;\t"Modification end position"
 string\tname;\t"Modification (MODOMICS) short name"
-uint\tscore;\t"off"
+uint\tscore;\t"Not used"
 char[1]\tstrand;\t"Strand"
 uint\tthickStart;\t"Thick start"
 uint\tthickEnd;\t"Thick end"
-uint\treserved;\t"Blue (0) to red (100) percent modified"
+uint\treserved;\t"Item color, blue (low) to red (100) percent modified"
 uint\tcoverage;\t"Coverage"
 float\tfrequency;\t"Percent modified"
-uint\trawScore;\t"bedRmod score"
+uint\trawScore;\t"Score as reported in the source bedRMod file"
 )
 """
 

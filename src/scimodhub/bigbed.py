@@ -35,7 +35,7 @@ def _get_as_schema(hub_cfg: TrackHubConfig) -> AutoSqlSchema:
         AutoSqlField(
             astype="uint",
             name="score",
-            description="off",
+            description="Not used",
         ),
         AutoSqlField(astype="char[1]", name="strand", description="Strand"),
         AutoSqlField(astype="uint", name="thickStart", description="Thick start"),
@@ -43,11 +43,15 @@ def _get_as_schema(hub_cfg: TrackHubConfig) -> AutoSqlSchema:
         AutoSqlField(
             astype="uint",
             name="reserved",
-            description="Blue (0) to red (100) percent modified",
+            description="Item color, blue (low) to red (100) percent modified",
         ),
         AutoSqlField(astype="uint", name="coverage", description="Coverage"),
         AutoSqlField(astype="float", name="frequency", description="Percent modified"),
-        AutoSqlField(astype="uint", name="rawScore", description="bedRmod score"),
+        AutoSqlField(
+            astype="uint",
+            name="rawScore",
+            description="Score as reported in the source bedRMod file",
+        ),
     )
     policy = hub_cfg.score_policy.lower()
     if policy not in ["zero", "coverage"]:
