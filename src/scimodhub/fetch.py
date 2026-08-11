@@ -5,7 +5,7 @@ from typing import TextIO
 
 import pandas as pd
 import requests
-from scimodhub.api import get_request
+from scimodhub.api import get_request, get_version
 
 from scimodhub.models import MetadataRow
 from scimodhub.utils import (
@@ -32,6 +32,16 @@ def _write_modomics(handle: TextIO, version: str) -> None:
     for val in response.json():
         d[val["modomics_sname"]] = val["id"]
     json.dump(d, handle, indent="\t")
+
+
+def _write_version(handle: TextIO) -> str:
+    headers = {
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+    }
+    response = requests.get(get_version(), headers=headers)
+    response.raise_for_status()
+    json.dump(response.json(), handle, indent="\t")
 
 
 def _write_metadata(
@@ -184,3 +194,7 @@ def fetch(config: dict, api_version: str, include: list[str]) -> None:
     logger.info(f"Writing: {modomics_file.as_posix()}")
     with modomics_file.open("w", encoding="utf-8") as fh:
         _write_modomics(fh, api_version)
+    version_file = Path(tmp_root, "version.json")
+    logger.info(f"Writing: {version_file.as_posix()}")
+    with version_file.open("w", encoding="utf-8") as fh:
+        _write_version(fh)

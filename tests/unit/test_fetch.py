@@ -10,6 +10,7 @@ from scimodhub.fetch import (
     _overwrite_metadata,
     _write_chroms,
     _write_modomics,
+    _write_version,
     _update_rows,
 )
 from scimodhub.utils import EmptyDataError
@@ -75,6 +76,16 @@ def test_write_modomics(mocker):
     with MockStringIO() as fh:
         _write_modomics(fh, "v0")
     assert json.loads(fh.final_content) == MODOMICS
+
+
+def test_write_version(mocker):
+    mock_get = mocker.patch("scimodhub.fetch.requests.get")
+    response = mock_get.return_value
+    response.status_code = 200
+    response.json.return_value = {"name": "v4.0.2"}
+    with MockStringIO() as fh:
+        _write_version(fh)
+    assert json.loads(fh.final_content) == {"name": "v4.0.2"}
 
 
 def test_write_metadata(mocker):

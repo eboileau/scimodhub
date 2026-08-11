@@ -23,19 +23,12 @@
 </p>
 
 <p>
-  Each subtrack is one Sci-ModoM dataset: one biological sample assayed by one
-  detection technology for one modification type. Datasets are organized in a
-  searchable, faceted table that mirrors the Sci-ModoM Search interface, with
-  facets for <b>modification</b>, <b>biosample</b> (cell line, tissue, or organ)
-  and <b>technology</b>. Every dataset carries an <b>EUFID</b> (Epitranscriptome
-  Unified Format identifier), which links back to its full record in the
-  Sci-ModoM Browse interface.
-</p>
-
-<p>
-  The modifications represented are N6-methyladenosine (m6A), 5-methylcytidine
-  (m5C), pseudouridine (Y), and the 2'-O-methylated nucleosides Am, Cm, Gm and
-  Um.
+  Datasets are organized in a searchable, faceted table that mirrors the
+  Sci-ModoM Search interface, with facets for <b>modification</b>,
+  <b>biosample</b> (cell line, tissue, or organ) and
+  <b>detection technology</b>. Every dataset carries a permanent
+  <b>EUFID</b> (Epitranscriptome Unified Format identifier), which links back to
+  its full record in the Sci-ModoM Browse interface.
 </p>
 
 <h2>Display Conventions and Configuration</h2>
@@ -45,19 +38,18 @@
   the left to narrow the table, then check the datasets you want to display. The
   <b>Active</b> tab lists only the datasets currently selected. Because a
   typical dataset covers only a small fraction of the transcriptome, subtracks
-  with no sites in the current window are hidden automatically.
+  with no sites in the current window are hidden automatically. Modification
+  sites are sparse, they may be associated with biosamples, conditions, or
+  technology, so many loci will show no sites at all.
 </p>
 
 <p>
-  Modification sites are sparse and restricted to transcribed regions, so many
-  loci will show no sites at all. Highly expressed genes are the best place to
-  look.
-</p>
-
-<p>
-  Each item is a single modified position, drawn on the strand it was called on.
-  Items are colored on a continuous blue-to-red ramp by <em>frequency</em> (also
-  called percent modified):
+  Each item is a single modified position (or a multi-base feature
+  <i>e.g.</i> PRAISE), drawn on the strand it was called on. In a few cases
+  <i>e.g.</i> PsiNanopore, the source study did not provide enough information
+  to assign a strand, so unstranded rows are possible. Items are colored on a
+  continuous blue-to-red ramp by <em>frequency</em> (also called percent
+  modified):
 </p>
 
 <table>
@@ -79,7 +71,7 @@
         >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span
       >
     </td>
-    <td>50% of reads modified</td>
+    <td>50% modified</td>
   </tr>
   <tr>
     <td>
@@ -87,48 +79,31 @@
         >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span
       >
     </td>
-    <td>100% of reads modified</td>
+    <td>100% modified</td>
   </tr>
 </table>
 
-<p>
-  The minimum reported frequency differs between datasets, because each source
-  study applied its own reporting cutoff.
-</p>
+<p>The minimum reported frequency differs between datasets.</p>
 
 <p>
-  Hovering over an item shows the modification, the read coverage and the
-  percent modified. Clicking an item opens a details page with the same values
-  and a link to the Sci-ModoM record for that dataset. The
-  <b>Percent modified</b> and <b>Minimum read coverage</b> filters on the
-  configuration page hide sites below a chosen threshold; both default to
-  showing everything.
+  Hovering over an item shows the modification, the coverage and the frequency
+  (percent modified). Clicking an item opens a details page with the same values
+  and a link to the Sci-ModoM record for that dataset. The original score value
+  may also be present (see Methods). The <b>Percent modified</b> and
+  <b>Minimum read coverage</b>
+  filters on the configuration page hide sites below a chosen threshold; both
+  default to showing everything.
 </p>
 
 <h2>Methods</h2>
 
 <p>
-  Sites are taken directly from Sci-ModoM without recalculation. Sci-ModoM
-  imports published datasets in
-  <a href="https://dieterich-lab.github.io/euf-specs" target="_blank"
-    >bedRMod (euf-specs)</a
-  >
-  format, harmonizes them to a common assembly and annotation, and assigns each
-  an EUFID. See the Sci-ModoM publication below for the import, liftover and
-  quality control procedure, and the per-dataset Sci-ModoM record for the source
-  study, sequencing protocol and reporting cutoffs.
-</p>
-
-<p>
-  The detection technologies represented in this hub are BID-seq, eTAM-seq,
-  GLORI, m5C-TAC-seq, m6A-SAC-seq, MePMe-seq, NanoNm, PRAISE, psi-co-mAFiA,
-  PsiNanopore, RBS-seq, UBS-seq and xPore. Each is described, with its source
-  citation, in the Sci-ModoM documentation.
-</p>
-
-<p>
-  For the browser, each dataset was converted to a bigBed file with nine
-  standard BED fields plus three extra fields, using the following schema:
+  This track hub was generated using
+  <a href="https://github.com/eboileau/scimodhub" target="_blank">scimodhub</a>.
+  All sites were retrieved from the Sci-ModoM API. For the browser, each dataset
+  was converted to a bigBed file with nine standard BED fields plus two extra
+  fields (a third extra field may be present to store the original bedRMod
+  score), using the following schema:
 </p>
 
 <pre>
@@ -149,6 +124,37 @@ float   frequency;   "Percent modified"
 uint    rawScore;    "Score as reported in the source bedRMod file"
 )
 </pre>
+
+<p>
+  For an explanation of the bedRMod score, consult the latest
+  <a href="https://dieterich-lab.github.io/euf-specs" target="_blank"
+    >euf-specs</a
+  >. See also
+  <a
+    href="https://github.com/eboileau/scimodhub/tree/main#score"
+    target="_blank"
+    >here</a
+  >
+  for an explanation how the bedRMod score is handled when generating these
+  tracks.
+</p>
+
+<p>
+  Sci-ModoM imports published datasets in
+  <a href="https://dieterich-lab.github.io/euf-specs" target="_blank"
+    >bedRMod (euf-specs)</a
+  >
+  format, harmonizes them to a common assembly and annotation, and assigns each
+  a permanent EUFID. Refer to the metadata of each dataset via its EUFID for
+  dataset-specific source study information and methodology. Consult the
+  <a
+    href="https://scimodom.dieterichlab.org/documentation/about"
+    target="_blank"
+    >online documentation</a
+  >
+  and the Sci-ModoM publication below for general information, import, liftover
+  and quality control procedures.
+</p>
 
 <h2>Data Access</h2>
 
@@ -184,10 +190,9 @@ bigBedToBed https://trackhub.dieterichlab.org/eboileau/SciModHub/hsapiens/hg38/j
 <h2>Credits</h2>
 
 <p>
-  Sci-ModoM is developed and maintained by the
+  Sci-ModoM is developed and maintained by Etienne Boileau from the
   <a href="https://dieterichlab.org" target="_blank">Dieterich Lab</a> at
-  Heidelberg University Hospital. This track hub was prepared by Etienne
-  Boileau. Thanks to the
+  Heidelberg University Hospital. Our work is done in collaboration with the
   <a href="https://doi.org/10.1186/s13059-025-03824-y" target="_blank"
     >Human RNome Project</a
   >. Thanks to Jonathan Casper and Maximilian Haeussler at UCSC for advice on

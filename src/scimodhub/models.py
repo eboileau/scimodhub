@@ -212,6 +212,7 @@ class FacetedComposite(BaseModel):
     center_labels: bool = True
     hide_empty: bool = True
     date: date
+    version: str
     item_rgb: str = "on"  # Activate item coloring using itemRgb.
     mouse_over: str
     filters: list[str] | None
@@ -230,7 +231,7 @@ class FacetedComposite(BaseModel):
             f"primaryKey {self.primary_key}",
             "subtrackUrls _eufid=https://scimodom.dieterichlab.org/browse/$$",
             f"defaultSortField {self.default_sort_field}",
-            f"dataVersion Sci-ModoM, files dated {self.date}",
+            f"dataVersion Sci-ModoM {self.version} {self.date}",
             f"itemRgb {self.item_rgb}",
             f"mouseOver {self.mouse_over}",
             f"maxCheckboxes {self.max_check_boxes}",

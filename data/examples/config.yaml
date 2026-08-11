@@ -42,9 +42,9 @@ hub:
     # A single-word name of the directory containing the track hub files. Not displayed to hub users.
     name: SciModHub
     # Maximum length is 17 characters. Displayed as the hub name.
-    short_label: "Sci-ModHub"
+    short_label: "Sci-ModoM"
     # Maximum length is 80 characters. Displayed in the description field.
-    long_label: "Sci-ModoM Track Hub"
+    long_label: "Sci-ModoM RNA modification sites - Track Hub"
     email: "boileau@uni-heidelberg.de"
     # Required: file to use for hub description - content must be valid html.
     description: docs/source/SciModHub.html
@@ -96,6 +96,12 @@ hub:
     4Hod8ruppnD2:
       - m5C
     msuJfBpJvM5H:
+      - m6A
+    7FgqfTStD4Pv:
+      - Y
+    J6XWhTgxjXtH:
+      - m5C
+    bzXmeqpkJVgz:
       - m6A
 
 # Defines the itemRgb color palette using the "frequency".

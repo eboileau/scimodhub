@@ -99,6 +99,7 @@ def write_trackdb(
     handle: TextIO,
     subtracks: list[Subtrack],
     hub_cfg: TrackHubConfig,
+    version: str,
 ) -> None:
     """Write track hub (trackDb)."""
     tracks = []
@@ -130,7 +131,7 @@ def write_trackdb(
     composite = FacetedComposite(
         name=hub_cfg.track_db.name,
         short_label=hub_cfg.track_db.short_label,
-        long_label=hub_cfg.track_db.long_label,
+        long_label=f"{hub_cfg.track_db.long_label} ({len(subtracks)} datasets)",
         track_type=f"bigBed {get_type(hub_cfg)}",
         meta_data_url="metadata.tsv",
         primary_key="dataset",
@@ -139,6 +140,7 @@ def write_trackdb(
         center_labels=hub_cfg.center_labels,
         hide_empty=hub_cfg.hide_empty,
         date=date.today(),
+        version=version,
         mouse_over=_get_mouse_over(hub_cfg),
         filters=hub_cfg.filters,
         tracks=tuple(tracks),

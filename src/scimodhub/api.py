@@ -25,6 +25,11 @@ def get_request(
     parts: str = "",
     query: dict[str, str | int] = dict(),
 ) -> str:
-    """Get API URL for a given endpoint."""
+    """Get Sci-ModoM API URL for a given endpoint."""
     path = urljoin(SCIMODOM_ENDPOINTS[version][endpoint], parts)
     return _get_url(SCIMODOM_REST, path, query)
+
+
+def get_version(owner: str = "dieterich-lab", repo: str = "scimodom") -> str:
+    """Get GitHub release."""
+    return urljoin(GITHUB_REST, f"{owner}/{repo}/releases/latest/")

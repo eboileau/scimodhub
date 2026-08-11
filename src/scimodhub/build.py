@@ -81,27 +81,32 @@ def _add_subtrack_spec(
 ) -> SubtrackSpec:
     sub = modomics[modification] if modomics else modification
     tid = f"{row.dataset_id}{sub}"
-    toggle_on = "off"
-    if hub_cfg.toggle_on and row.dataset_id in hub_cfg.toggle_on:
-        if modification in hub_cfg.toggle_on[row.dataset_id]:
-            toggle_on = "on"
-    short_label = f"{modification} {row.cto}"
-    count = 1
-    label = short_label
-    while label in short_labels:
-        label = f"{short_label} {count}"
-        count += 1
+
+    def _get_toggle() -> str:
+        if hub_cfg.toggle_on and row.dataset_id in hub_cfg.toggle_on:
+            if modification in hub_cfg.toggle_on[row.dataset_id]:
+                return "on"
+        return "off"
+
+    def _get_short_label(count: int = 1) -> str:
+        short_label = f"{modification} {row.cto}"
+        label = short_label
+        while label in short_labels:
+            label = f"{short_label} {count}"
+            count += 1
+        return label
+
     return SubtrackSpec(
         primary_key=tid,
         subtrack=f"{hub_cfg.track_db.name}_{tid}",
-        toggle_on=toggle_on,
+        toggle_on=_get_toggle(),
         dataset_id=row.dataset_id,
         dataset_title=row.dataset_title,
         rna=row.rna,
         modification=modification,
         tech=row.tech,
         cto=row.cto,
-        short_label=label,
+        short_label=_get_short_label(),
         long_label=f"{modification} {row.tech}: {row.dataset_title}",
         hub_root=hub_root,
         hub_dir=hub_dir,
@@ -151,6 +156,7 @@ def build_organism_tracks(
     config: dict,
     organism: str,
     modomics: dict[str, str],
+    version: str,
     skip_call: bool = False,
     max_workers: int | None = None,
 ) -> tuple[str, str]:
@@ -222,7 +228,7 @@ def build_organism_tracks(
             future.result()
 
     with open(Path(hub_dir, "trackDb.txt"), "w") as fh:
-        write_trackdb(fh, subtracks, hub_cfg)
+        write_trackdb(fh, subtracks, hub_cfg, version)
 
     return org_cfg["assembly"][assembly], hub_dir.relative_to(hub_root).as_posix()
 
@@ -245,6 +251,14 @@ def build_tracks(
             logger.info(f"Using: {modomics_file.as_posix()} (MODOMICS code).")
         except Exception:
             pass
+    version_file = Path(tmp_root, "version.json")
+    if version_file.exists():
+        try:
+            with version_file.open("r") as fh:
+                version = json.load(fh)["name"]
+            logger.info(f"Using: {version_file.as_posix()} (Sci-ModoM version).")
+        except Exception:
+            version = ""
     genomes = []
     for organism in config["genomes"]["include"]:
         try:
@@ -252,6 +266,7 @@ def build_tracks(
                 config,
                 organism,
                 modomics,
+                version,
                 skip_call=skip_call,
                 max_workers=max_workers,
             )
