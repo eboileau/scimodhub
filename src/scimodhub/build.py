@@ -252,13 +252,14 @@ def build_tracks(
         except Exception:
             pass
     version_file = Path(tmp_root, "version.json")
+    version = ""
     if version_file.exists():
         try:
             with version_file.open("r") as fh:
                 version = json.load(fh)["name"]
             logger.info(f"Using: {version_file.as_posix()} (Sci-ModoM version).")
         except Exception:
-            version = ""
+            pass
     genomes = []
     for organism in config["genomes"]["include"]:
         try:
