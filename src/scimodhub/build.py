@@ -96,6 +96,14 @@ def _add_subtrack_spec(
             count += 1
         return label
 
+    # TODO max_length
+    def _truncate(s, max_length=76):
+        # no newlines, tabs, or multiple spaces
+        if len(s) <= max_length:
+            return s
+        truncated = s[: max_length - 3].rsplit(" ", 1)[0]
+        return truncated + "..."
+
     return SubtrackSpec(
         primary_key=tid,
         subtrack=f"{hub_cfg.track_db.name}_{tid}",
@@ -107,7 +115,7 @@ def _add_subtrack_spec(
         tech=row.tech,
         cto=row.cto,
         short_label=_get_short_label(),
-        long_label=f"{modification} {row.tech}: {row.dataset_title}",
+        long_label=_truncate(f"{modification} {row.tech}: {row.dataset_title}"),
         hub_root=hub_root,
         hub_dir=hub_dir,
         tmp_dir=tmp_dir,
