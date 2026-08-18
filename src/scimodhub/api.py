@@ -32,4 +32,4 @@ def get_request(
 
 def get_version(owner: str = "dieterich-lab", repo: str = "scimodom") -> str:
     """Get GitHub release."""
-    return urljoin(GITHUB_REST, f"{owner}/{repo}/releases/latest/")
+    return urljoin(GITHUB_REST, f"{owner}/{repo}/releases/latest")
