@@ -238,6 +238,9 @@ def build_organism_tracks(
             future.result()
 
     track_db = Path(hub_dir, "trackDb.txt")
+    with open(track_db, "w") as fh:
+        write_trackdb(fh, subtracks, hub_cfg, version, create_index)
+
     if create_index:
         index_empty_subtracks(
             hub_cfg.track_db.name,
@@ -245,9 +248,6 @@ def build_organism_tracks(
             chrom_sizes.as_posix(),
             hub_dir.as_posix(),
         )
-
-    with open(track_db, "w") as fh:
-        write_trackdb(fh, subtracks, hub_cfg, version, create_index)
 
     return org_cfg["assembly"][assembly], hub_dir.relative_to(hub_root).as_posix()
 
