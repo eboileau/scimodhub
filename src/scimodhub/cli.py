@@ -60,6 +60,13 @@ def main() -> None:
         default=None,
         help="Max. worker threads to execute calls asynchronously.",
     )
+    build_parser.add_argument(
+        "-i",
+        "--create-index",
+        action="store_true",
+        help="""Call trackDbIndexBb. Additionally requires trackDbIndexBb,
+        bigBedToBed and bedtools.""",
+    )
     clean_parser = subparsers.add_parser(
         "clean",
         help="Remove temporary directories.",
@@ -84,7 +91,14 @@ def main() -> None:
             if shutil.which("bedToBigBed") is None:
                 logger.error("FileNotFoundError: No such file: 'bedToBigBed'")
                 return
-        build_tracks(config, args.skip_call, args.max_workers)
+        if args.create_index:
+            for ex in ["trackDbIndexBb", "bigBedToBed", "bedtools"]:
+                if shutil.which(ex) is None:
+                    logger.error(
+                        f"FileNotFoundError: No such file: '{ex}'. Setting [--create-index] to false"
+                    )
+                    args.create_index = False
+        build_tracks(config, args.skip_call, args.max_workers, args.create_index)
     elif args.cmd == "clean":
         tmp_root = get_tmp_dir(config)
         shutil.rmtree(tmp_root, ignore_errors=True)

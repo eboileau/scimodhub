@@ -8,8 +8,11 @@ from scimodhub.utils import (
     get_hub_dir,
     get_chrom_mapping,
     get_type,
+    index_empty_subtracks,
 )
 from scimodhub.models import MetadataRow, TrackDb, TrackHubConfig
+
+from tests.mocks.io import MockStringIO
 
 METADATA_TBL = """project_id\tdataset_id\tdataset_title\ttaxa_id\trna\tmodomics_sname\ttech\tcto\tbedrmod_path
 WrBiNJCZ\ta7o5Kmjr4Tdp\tHEK293T Trub1-KD\t9606\tWTS\tm6A,Y\tpsi-co-mAFiA\tHEK293T\tpath"""
@@ -81,6 +84,15 @@ HUB_CONFIG = TrackHubConfig(
 )
 
 
+def _mock_run(
+    cmd, caller, capture_output: bool = False, stdout: MockStringIO | None = None
+):
+    if stdout is None:
+        print(cmd)
+    else:
+        stdout.write(cmd)
+
+
 def test_load_metadata(caplog):
     assembly = "GRCh38"
     rows = load_metadata(StringIO(METADATA_TBL), assembly)
@@ -148,3 +160,18 @@ def test_get_type():
     hub_cfg.score_policy = "coverage"
     bed_type = get_type(hub_cfg)
     assert bed_type == "9 + 3"
+
+
+def test_create_index(mocker, capsys):
+    mock_run = mocker.patch("scimodhub.utils.call_run")
+    mock_run.side_effect = _mock_run
+
+    index_empty_subtracks(
+        "trackName", "path/to/trackDb.txt", "path/to/chrom.sizes", "path/to"
+    )
+    captured = capsys.readouterr()
+    assert (
+        captured.out
+        == "trackDbIndexBb trackName path/to/trackDb.txt path/to/chrom.sizes -o path/to\n"
+    )
+    mock_run.assert_called_once()

@@ -1,10 +1,8 @@
 import logging
 from pathlib import Path
 from typing import Generator, TextIO
-import shlex
-from subprocess import run, CalledProcessError
 
-from scimodhub.utils import frequency_to_rgb_triplet, get_type
+from scimodhub.utils import frequency_to_rgb_triplet, get_type, call_run
 from scimodhub.models import (
     EufRecord,
     Subtrack,
@@ -119,31 +117,9 @@ def _write_bed(
         handle.write(record)
 
 
-def _run(
-    cmd: str,
-    caller: str,
-    check: bool = True,
-    capture_output: bool = True,
-    text: bool = True,
-    stdout: TextIO | None = None,
-) -> None:
-    try:
-        run(
-            shlex.split(cmd),
-            check=check,
-            capture_output=capture_output,
-            text=text,
-            stdout=stdout,
-        )
-    except FileNotFoundError as exc:
-        raise Exception(f"Process failed: {caller} could not be found!") from exc
-    except CalledProcessError as exc:
-        raise Exception(f"Process failed with {exc.stderr}")
-
-
 def _sort_bed(handle: TextIO, bed_path: str) -> None:
     cmd = f"sort -k1,1 -k2,2n {bed_path}"
-    _run(cmd, "sort", capture_output=False, stdout=handle)
+    call_run(cmd, "sort", capture_output=False, stdout=handle)
 
 
 def _convert_to_bigbed(
@@ -157,7 +133,7 @@ def _convert_to_bigbed(
         f"bedToBigBed -tab -as={autosql_path} -type=bed{bed_type} "
         f"{sorted_bed_path} {chrom_sizes} {bb_path}"
     )
-    _run(cmd, "bedToBigBed")
+    call_run(cmd, "bedToBigBed")
 
 
 def build_subtrack(

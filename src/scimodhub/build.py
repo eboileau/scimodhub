@@ -21,6 +21,7 @@ from scimodhub.utils import (
     get_hub_dir,
     get_org_cfg_and_assembly,
     get_chrom_mapping,
+    index_empty_subtracks,
 )
 from scimodhub.hub import (
     hub_config_from_dict,
@@ -167,6 +168,7 @@ def build_organism_tracks(
     version: str,
     skip_call: bool = False,
     max_workers: int | None = None,
+    create_index: bool = False,
 ) -> tuple[str, str]:
     """Build tracks for a given organism."""
     org_cfg, assembly = get_org_cfg_and_assembly(config, organism)
@@ -235,8 +237,17 @@ def build_organism_tracks(
         for future in as_completed(futures):
             future.result()
 
-    with open(Path(hub_dir, "trackDb.txt"), "w") as fh:
-        write_trackdb(fh, subtracks, hub_cfg, version)
+    track_db = Path(hub_dir, "trackDb.txt")
+    if create_index:
+        index_empty_subtracks(
+            hub_cfg.track_db.name,
+            track_db.as_posix(),
+            chrom_sizes.as_posix(),
+            hub_dir.as_posix(),
+        )
+
+    with open(track_db, "w") as fh:
+        write_trackdb(fh, subtracks, hub_cfg, version, create_index)
 
     return org_cfg["assembly"][assembly], hub_dir.relative_to(hub_root).as_posix()
 
@@ -245,6 +256,7 @@ def build_tracks(
     config: dict,
     skip_call: bool = False,
     max_workers: int | None = None,
+    create_index: bool = False,
 ) -> None:
     """Build tracks."""
     hub_root = get_hub_dir(config)
@@ -278,6 +290,7 @@ def build_tracks(
                 version,
                 skip_call=skip_call,
                 max_workers=max_workers,
+                create_index=create_index,
             )
             genomes.append((assembly, rel_path))
         except (FileNotFoundError, EmptyDataError) as err:

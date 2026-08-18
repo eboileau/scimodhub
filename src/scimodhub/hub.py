@@ -100,6 +100,7 @@ def write_trackdb(
     subtracks: list[Subtrack],
     hub_cfg: TrackHubConfig,
     version: str,
+    create_index: bool = False,
 ) -> None:
     """Write track hub (trackDb)."""
     tracks = []
@@ -141,6 +142,7 @@ def write_trackdb(
         hide_empty=hub_cfg.hide_empty,
         date=date.today(),
         version=version,
+        create_index=create_index,
         mouse_over=_get_mouse_over(hub_cfg),
         filters=hub_cfg.filters,
         tracks=tuple(tracks),

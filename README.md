@@ -1,6 +1,6 @@
 # Sci-ModHub
 
-Sci-ModoM UCSC track hub generator. **scimodhub** fetches metadata and data from [Sci-ModoM](https://scimodom.dieterichlab.org) and builds a track hub using a _faceted composite_, by modification, cell type, tissue or organism, and technology.
+Sci-ModoM UCSC track hub generator. **scimodhub** fetches metadata and data from [Sci-ModoM](https://scimodom.dieterichlab.org) and builds a track hub using a _faceted composite_, by modification, biosample (cell type, tissue or organ), and technology.
 
 <p align="center">
   <a href="https://trackhub.dieterichlab.org/eboileau/SciModHub/"><img alt="Sci-ModHub" src="https://github.com/eboileau/scimodhub/blob/main/docs/source/_static/logo_hub.png"></a>
@@ -31,17 +31,17 @@ and make them visible. `bedToBigBed` is required; the others are optional. Chrom
 
 To build a track hub, **scimodhub** needs a list of bedRmod files and associated metadata. To prepare this list and download the required data, use the `fetch` command with `metadata_table: null`. A `metadata_table` can also be given as input to the `build` command. This table contains one row per dataset file. Required columns are:
 
-| header         | value                     |
-| :------------- | :------------------------ |
-| dataset_id     | EUFID or dataset ID       |
-| project_id     | SMID or project ID        |
-| dataset_title  | Dataset title             |
-| taxa_id        | NCBI Taxonomic ID         |
-| rna            | A valid RNA type          |
-| tech           | Technology                |
-| modomics_sname | MODOMICS short name       |
-| cto            | cell, tissue, or organism |
-| bedrmod_path   | Path to bedRmod file      |
+| header         | value                  |
+| :------------- | :--------------------- |
+| dataset_id     | EUFID or dataset ID    |
+| project_id     | SMID or project ID     |
+| dataset_title  | Dataset title          |
+| taxa_id        | NCBI Taxonomic ID      |
+| rna            | A valid RNA type       |
+| tech           | Technology             |
+| modomics_sname | MODOMICS short name    |
+| cto            | cell, tissue, or organ |
+| bedrmod_path   | Path to bedRmod file   |
 
 For more details on the meaning of these columns, consult the [Sci-ModoM documentation](https://scimodom.dieterichlab.org/documentation/about) or the latest [EUF specs](https://dieterich-lab.github.io/euf-specs/).
 
@@ -115,6 +115,9 @@ scimodhub --config data/examples/config.yaml build
 
 Use `--skip-call` to create hub but skip calls to `bedToBigBed`.
 
+`hideEmptySubtracks on` works as intended, but without an index it can only take effect after every selected subtrack has been loaded and queried.
+Use `--create-index` to run `trackDbIndexBb` against a trackDb file. This option builds the optional index with `trackDbIndexBb` and points `hideEmptySubtracksMultiBedUrl` and `hideEmptySubtracksSourcesUrl` at it. For this, you also need [bedtools](https://bedtools.readthedocs.io) -- `trackDbIndexBb` calls `bedtools multiinter` under the hood.
+
 #### Clean
 
 ```bash
@@ -174,7 +177,7 @@ warning: missing description page for track. Add 'html SciModoM_dataset00003m6A.
 - Score: models allow for `score: NonNegativInt` whereas it should be `score: PositiveInt`, but since we need to read the current
   bed files (1.8), we have to allow score = 0, see also [Update bedRMod specs #167](https://github.com/dieterich-lab/scimodom/issues/167).
 
-- Do we need all three `noScoreFilter on`, `useScore 0` (deprecated?), `spectrum off`...?
+- The shortLabel has the form `<modification> <biosample> <n>`, where `<n>` is arbitrary and only increments with the combination of modification and biosample, independently of technology. The longLabel has the form `<modification> <technology>: <dataset title>`, which ignores biosample. The `<dataset title>` is truncated to the maximum allowed length.
 
 - Use bedmethyl default with missing fields?
 

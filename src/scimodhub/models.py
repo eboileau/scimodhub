@@ -178,13 +178,13 @@ class TrackDbTrack(BaseModel):
 
     def render(self) -> str:
         lines = [
-            f"track {self.name}",
-            f"parent {self.parent} {self.toggle_on}",
-            f"shortLabel {self.short_label}",
-            f"longLabel {self.long_label}",
-            f"bigDataUrl {self.big_data_url}",
-            f"url {self.url}",
-            f"urlLabel {self.url_label}",
+            f"    track {self.name}",
+            f"    parent {self.parent} {self.toggle_on}",
+            f"    shortLabel {self.short_label}",
+            f"    longLabel {self.long_label}",
+            f"    bigDataUrl {self.big_data_url}",
+            f"    url {self.url}",
+            f"    urlLabel {self.url_label}",
             "",
         ]
         return "\n".join(lines)
@@ -213,6 +213,7 @@ class FacetedComposite(BaseModel):
     hide_empty: bool = True
     date: date
     version: str
+    create_index: bool = False
     item_rgb: str = "on"  # Activate item coloring using itemRgb.
     mouse_over: str
     filters: list[str] | None
@@ -240,6 +241,11 @@ class FacetedComposite(BaseModel):
             lines.append("centerLabelsDense on")
         if self.hide_empty:
             lines.append("hideEmptySubtracks on")
+        if self.create_index:
+            lines.append(f"hideEmptySubtracksMultiBedUrl {self.name}.multiBed.bb")
+            lines.append(
+                f"hideEmptySubtracksSourcesUrl {self.name}.multiBedSources.tab"
+            )
         if self.filters:
             for filter in self.filters:
                 lines.append(FilterSettings[filter])

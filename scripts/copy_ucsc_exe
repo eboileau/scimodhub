@@ -7,7 +7,7 @@
 PARENT=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 # For a description see below or online
-exe=( fetchChromSizes bedToBigBed hubCheck bigBedInfo bigBedSummary )
+exe=( fetchChromSizes bedToBigBed bigBedToBed trackDbIndexBb hubCheck bigBedInfo bigBedSummary )
 
 for e in "${exe[@]}"
 do
@@ -79,6 +79,20 @@ echo "Done!"
 #    -allow1bpOverlap  -- allow exons to overlap by at most one base pair
 #    -maxAlloc=N -- Set the maximum memory allocation size to N bytes
 #
+# ================================================================
+# ========   bigBedToBed   ====================================
+# ================================================================
+# ### kent source version 362 ###
+# bigBedToBed v1 - Convert from bigBed to ascii bed format.
+# usage:
+# bigBedToBed input.bb output.bed
+# options:
+# -chrom=chr1 - if set restrict output to given chromosome
+# -start=N - if set, restrict output to only that over start
+# -end=N - if set, restict output to only that under end
+# -maxItems=N - if set, restrict output to first N items
+# -udcDir=/dir/to/cache - place to put cache for remote bigBed/bigWigs
+
 #
 # ================================================================
 # ========   hubCheck   ====================================

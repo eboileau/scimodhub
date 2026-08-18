@@ -116,10 +116,13 @@ EXPECTED_TRACK_HUB = {
     "description.html": "html description",
 }
 
-EXPECTED_TRACK_DB = "track trackDbName\nshortLabel trackDb (label)\nlongLabel trackDb long label (label) (1 datasets)\ntype bigBed 9 + 2\ncompositeTrack faceted\nvisibility pack\nhtml trackDbName\nmetaDataUrl metadata.tsv\nprimaryKey dataset\nsubtrackUrls _eufid=https://scimodom.dieterichlab.org/browse/$$\ndefaultSortField modification\ndataVersion Sci-ModoM  2026-08-11\nitemRgb on\nmouseOver $name at $chrom:${chromStart} | score: $score | coverage: $coverage | percent modified: $frequency\nmaxCheckboxes 20\ncenterLabelsDense on\nhideEmptySubtracks on\n\ntrack trackDbName_a7o5Kmjr4TdpY\nparent trackDbName off\nshortLabel Y\nlongLabel EUFID:a7o5Kmjr4Tdp | Y HEK293T psi-co-mAFiA\nbigDataUrl a7o5Kmjr4TdpY.bb\nurl https://scimodom.dieterichlab.org/browse/a7o5Kmjr4Tdp\nurlLabel Sci-ModoM dataset record (a7o5Kmjr4Tdp)\n"
+EXPECTED_TRACK_DB = "track trackDbName\nshortLabel trackDb (label)\nlongLabel trackDb long label (label) (1 datasets)\ntype bigBed 9 + 2\ncompositeTrack faceted\nvisibility pack\nhtml trackDbName\nmetaDataUrl metadata.tsv\nprimaryKey dataset\nsubtrackUrls _eufid=https://scimodom.dieterichlab.org/browse/$$\ndefaultSortField modification\ndataVersion Sci-ModoM  2026-08-11\nitemRgb on\nmouseOver $name at $chrom:${chromStart} | score: $score | coverage: $coverage | percent modified: $frequency\nmaxCheckboxes 20\ncenterLabelsDense on\nhideEmptySubtracks on\n\n    track trackDbName_a7o5Kmjr4TdpY\n    parent trackDbName off\n    shortLabel Y\n    longLabel EUFID:a7o5Kmjr4Tdp | Y HEK293T psi-co-mAFiA\n    bigDataUrl a7o5Kmjr4TdpY.bb\n    url https://scimodom.dieterichlab.org/browse/a7o5Kmjr4Tdp\n    urlLabel Sci-ModoM dataset record (a7o5Kmjr4Tdp)\n"
 
 
-EXPECTED_TRACK_DB_WITH_OPTIONS = "track trackDbName\nshortLabel trackDb (label)\nlongLabel trackDb long label (label) (1 datasets)\ntype bigBed 9 + 2\ncompositeTrack faceted\nvisibility pack\nhtml trackDbName\nmetaDataUrl metadata.tsv\nprimaryKey dataset\nsubtrackUrls _eufid=https://scimodom.dieterichlab.org/browse/$$\ndefaultSortField modification\ndataVersion Sci-ModoM v4.0.2 2026-08-11\nitemRgb on\nmouseOver $name at $chrom:${chromStart} | score: $score | coverage: $coverage | percent modified: $frequency\nmaxCheckboxes 20\ncenterLabelsDense on\nhideEmptySubtracks on\nfilter.frequency 0\nfilterByRange.frequency on\nfilterLimits.frequency 0:100\nfilterLabel.frequency Frequency (percent modified)\nfilter.coverage 0\nfilterLimits.coverage 0:400000\nfilterLabel.coverage Minimum coverage\n\ntrack trackDbName_a7o5Kmjr4TdpY\nparent trackDbName off\nshortLabel Y\nlongLabel EUFID:a7o5Kmjr4Tdp | Y HEK293T psi-co-mAFiA\nbigDataUrl a7o5Kmjr4TdpY.bb\nurl https://scimodom.dieterichlab.org/browse/a7o5Kmjr4Tdp\nurlLabel Sci-ModoM dataset record (a7o5Kmjr4Tdp)\n"
+EXPECTED_TRACK_DB_WITH_INDEX = "track trackDbName\nshortLabel trackDb (label)\nlongLabel trackDb long label (label) (1 datasets)\ntype bigBed 9 + 2\ncompositeTrack faceted\nvisibility pack\nhtml trackDbName\nmetaDataUrl metadata.tsv\nprimaryKey dataset\nsubtrackUrls _eufid=https://scimodom.dieterichlab.org/browse/$$\ndefaultSortField modification\ndataVersion Sci-ModoM  2026-08-11\nitemRgb on\nmouseOver $name at $chrom:${chromStart} | score: $score | coverage: $coverage | percent modified: $frequency\nmaxCheckboxes 20\ncenterLabelsDense on\nhideEmptySubtracks on\nhideEmptySubtracksMultiBedUrl trackDbName.multiBed.bb\nhideEmptySubtracksSourcesUrl trackDbName.multiBedSources.tab\n\n    track trackDbName_a7o5Kmjr4TdpY\n    parent trackDbName off\n    shortLabel Y\n    longLabel EUFID:a7o5Kmjr4Tdp | Y HEK293T psi-co-mAFiA\n    bigDataUrl a7o5Kmjr4TdpY.bb\n    url https://scimodom.dieterichlab.org/browse/a7o5Kmjr4Tdp\n    urlLabel Sci-ModoM dataset record (a7o5Kmjr4Tdp)\n"
+
+
+EXPECTED_TRACK_DB_WITH_OPTIONS = "track trackDbName\nshortLabel trackDb (label)\nlongLabel trackDb long label (label) (1 datasets)\ntype bigBed 9 + 2\ncompositeTrack faceted\nvisibility pack\nhtml trackDbName\nmetaDataUrl metadata.tsv\nprimaryKey dataset\nsubtrackUrls _eufid=https://scimodom.dieterichlab.org/browse/$$\ndefaultSortField modification\ndataVersion Sci-ModoM v4.0.2 2026-08-11\nitemRgb on\nmouseOver $name at $chrom:${chromStart} | score: $score | coverage: $coverage | percent modified: $frequency\nmaxCheckboxes 20\ncenterLabelsDense on\nhideEmptySubtracks on\nfilter.frequency 0\nfilterByRange.frequency on\nfilterLimits.frequency 0:100\nfilterLabel.frequency Frequency (percent modified)\nfilter.coverage 0\nfilterLimits.coverage 0:400000\nfilterLabel.coverage Minimum coverage\n\n    track trackDbName_a7o5Kmjr4TdpY\n    parent trackDbName off\n    shortLabel Y\n    longLabel EUFID:a7o5Kmjr4Tdp | Y HEK293T psi-co-mAFiA\n    bigDataUrl a7o5Kmjr4TdpY.bb\n    url https://scimodom.dieterichlab.org/browse/a7o5Kmjr4Tdp\n    urlLabel Sci-ModoM dataset record (a7o5Kmjr4Tdp)\n"
 
 
 def test_track_db_config_from_dict():
@@ -150,6 +153,13 @@ def test_write_trackdb(freezer):
     with MockStringIO() as fh:
         write_trackdb(fh, SUBTRACKS, EXPECTED_HUB_CONFIG, "")
     assert fh.final_content == EXPECTED_TRACK_DB
+
+
+def test_write_trackdb_with_index(freezer):
+    freezer.move_to("2026-08-11")
+    with MockStringIO() as fh:
+        write_trackdb(fh, SUBTRACKS, EXPECTED_HUB_CONFIG, "", True)
+    assert fh.final_content == EXPECTED_TRACK_DB_WITH_INDEX
 
 
 def test_write_trackdb_with_options(freezer):

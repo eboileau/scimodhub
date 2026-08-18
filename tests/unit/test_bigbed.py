@@ -154,7 +154,7 @@ def test_write_autosql():
 
 
 def test_sort_bed(mocker):
-    mock_run = mocker.patch("scimodhub.bigbed._run")
+    mock_run = mocker.patch("scimodhub.bigbed.call_run")
     mock_run.side_effect = _mock_run
     with MockStringIO() as fh:
         _sort_bed(fh, "bed")
@@ -162,7 +162,7 @@ def test_sort_bed(mocker):
 
 
 def test_convert_to_bigbed(mocker, capsys):
-    mock_run = mocker.patch("scimodhub.bigbed._run")
+    mock_run = mocker.patch("scimodhub.bigbed.call_run")
     mock_run.side_effect = _mock_run
     _convert_to_bigbed("sorted", "chrom.sizes", "autosql", "bigbed", "9+5")
     captured = capsys.readouterr()

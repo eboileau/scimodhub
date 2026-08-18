@@ -1,8 +1,10 @@
 import re
 import sys
+import shlex
 import logging
 from pathlib import Path
 from typing import TextIO
+from subprocess import run, CalledProcessError
 
 import pandas as pd
 
@@ -203,3 +205,37 @@ def update_logging(
         level = logging.getLevelName(args.logging_level)
         h.setLevel(level)
     logger.addHandler(h)
+
+
+def index_empty_subtracks(
+    track_name: str,
+    track_db: str,
+    chrom_sizes: str,
+    index_out: str,
+) -> None:
+    """Index empty subtracks."""
+    cmd = f"trackDbIndexBb {track_name} {track_db} {chrom_sizes} -o {index_out}"
+    call_run(cmd, "trackDbIndexBb")
+
+
+def call_run(
+    cmd: str,
+    caller: str,
+    check: bool = True,
+    capture_output: bool = True,
+    text: bool = True,
+    stdout: TextIO | None = None,
+) -> None:
+    """Call subprocess run."""
+    try:
+        run(
+            shlex.split(cmd),
+            check=check,
+            capture_output=capture_output,
+            text=text,
+            stdout=stdout,
+        )
+    except FileNotFoundError as exc:
+        raise Exception(f"Process failed: {caller} could not be found!") from exc
+    except CalledProcessError as exc:
+        raise Exception(f"Process failed with {exc.stderr}")
