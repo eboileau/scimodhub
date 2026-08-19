@@ -99,11 +99,12 @@ def _add_subtrack_spec(
 
     # TODO max_length
     def _truncate(s, max_length=76):
-        # no newlines, tabs, or multiple spaces
         if len(s) <= max_length:
             return s
-        truncated = s[: max_length - 3].rsplit(" ", 1)[0]
-        return truncated + "..."
+        available = max_length - 3
+        head = s[: available // 2].rsplit(" ", 1)[0]
+        tail = s[-(available - len(head)) :].split(" ", 1)[-1]  # noqa: E203
+        return f"{head}...{tail}"
 
     return SubtrackSpec(
         primary_key=tid,

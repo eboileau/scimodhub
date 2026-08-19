@@ -253,6 +253,7 @@ class FacetedComposite(BaseModel):
         for tr in self.tracks:
             lines.append(tr.render().rstrip())
             lines.append("")
+        lines.append("")
         return "\n".join(lines).rstrip() + "\n"
 
 
